@@ -1,0 +1,34 @@
+import { createClient } from "@supabase/supabase-js";
+
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
+const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
+
+export const supabase = createClient(supabaseUrl, supabaseAnonKey);
+
+export type PortfolioDaily = {
+  date: string;
+  total_capital: number;
+  daily_pnl: number;
+  daily_pnl_pct: number;
+  n_trades: number;
+  drawdown: number;
+  cumulative_return?: number;
+  cash_ratio?: number | null;
+  holdings_count?: number | null;
+};
+
+export type Trade = {
+  id: number;
+  timestamp: string;
+  date: string;
+  ticker: string;
+  side: "BUY" | "SELL";
+  quantity: number;
+  price: number;
+  notional: number;
+  signal_score: number | null;
+  kelly_weight: number | null;
+  order_result: string | null;
+  strategy: string | null;
+  strategy_name?: string | null;
+};
