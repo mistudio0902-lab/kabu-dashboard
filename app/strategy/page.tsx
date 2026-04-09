@@ -52,8 +52,7 @@ export default function StrategyPage() {
             <div className="px-6 py-4 text-sm text-gray-600">
               <p className="leading-relaxed">
                 決算発表後の<span className="font-semibold text-gray-800">業績上方修正銘柄</span>をサプライズ率でスコアリングし、翌営業日の寄付きで買い。
-                発表後に株価がサプライズの方向へ数日ドリフトする現象（PEAD）を利用。
-                価格反応・センチメントフィルターで悪材料銘柄を除外する。
+                発表後に株価がサプライズの方向へ数日ドリフトする現象（PEAD）を利用する短期戦略。
               </p>
             </div>
           </div>
