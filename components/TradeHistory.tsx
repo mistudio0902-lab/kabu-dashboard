@@ -7,7 +7,6 @@ type Props = {
 const STRATEGY_COLOR: Record<string, string> = {
   PEAD: "bg-blue-50 text-blue-700",
   Turnover: "bg-purple-50 text-purple-700",
-  Testa: "bg-orange-50 text-orange-700",
 };
 
 export default function TradeHistory({ trades }: Props) {

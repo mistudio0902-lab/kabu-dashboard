@@ -25,8 +25,11 @@ function calcModalStats(data: PortfolioDaily[]) {
     first.total_capital > 0
       ? ((latest.total_capital - first.total_capital) / first.total_capital) * 100
       : 0;
+  const unrealizedPnl = latest.unrealized_pnl ?? 0;
   return {
-    totalCapital: latest.total_capital,
+    totalCapital: latest.total_capital + unrealizedPnl,
+    unrealizedPnl,
+    latestDate: latest.date,
     dailyPnlPct: latest.daily_pnl_pct * 100,
     cumReturn,
     sharpe,
@@ -38,7 +41,6 @@ function calcModalStats(data: PortfolioDaily[]) {
 const STRATEGIES: Record<string, string> = {
   PEAD: "PEAD",
   turnover: "売買代金急増",
-  testa: "Testa",
 };
 
 function formatStrategy(signal: string | null) {
@@ -126,7 +128,7 @@ export default function AgentModal({
                     color: "text-gray-900",
                   },
                   {
-                    label: "日次 %",
+                    label: stats ? `日次 % (${stats.latestDate})` : "日次 %",
                     value: stats
                       ? `${stats.dailyPnlPct >= 0 ? "+" : ""}${stats.dailyPnlPct.toFixed(2)}%`
                       : "—",

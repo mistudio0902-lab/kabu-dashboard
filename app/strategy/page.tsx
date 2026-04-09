@@ -2,7 +2,7 @@ import Header from "@/components/Header";
 
 export const metadata = {
   title: "戦略 | kabu-trader",
-  description: "kabu-traderが採用する投資戦略。PEAD（決算後ドリフト）・売買代金急増・Testa戦略の詳細。",
+  description: "kabu-traderが採用する投資戦略。PEAD（決算後ドリフト）・売買代金急増戦略の詳細。",
 };
 
 export default function StrategyPage() {
@@ -95,30 +95,6 @@ export default function StrategyPage() {
                   </div>
                 ))}
               </div>
-            </div>
-          </div>
-
-          {/* Testa */}
-          <div className="bg-white border border-gray-200 rounded-xl overflow-hidden">
-            <div className="px-6 py-4 border-b border-gray-100 flex items-center justify-between">
-              <div className="flex items-center gap-3">
-                <div className="w-8 h-8 bg-gray-100 rounded-lg flex items-center justify-center">
-                  <span className="text-gray-500 text-xs font-bold">テ</span>
-                </div>
-                <div>
-                  <h2 className="text-sm font-bold text-gray-900">Testa 戦略</h2>
-                  <p className="text-xs text-gray-400">個人投資家テスタ氏のアプローチを参考</p>
-                </div>
-              </div>
-              <span className="text-xs bg-gray-100 text-gray-500 px-2.5 py-1 rounded-full font-medium">
-                開発中
-              </span>
-            </div>
-            <div className="px-6 py-4 text-sm text-gray-600">
-              <p className="leading-relaxed">
-                業績好調かつ株価調整局面での押し目買い。
-                ファンダメンタルズとチャートパターンを組み合わせた中期保有戦略。現在バックテスト中。
-              </p>
             </div>
           </div>
 

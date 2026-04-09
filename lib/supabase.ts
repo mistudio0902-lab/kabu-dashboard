@@ -15,6 +15,7 @@ export type PortfolioDaily = {
   cumulative_return?: number;
   cash_ratio?: number | null;
   holdings_count?: number | null;
+  unrealized_pnl?: number | null;
 };
 
 export type Trade = {

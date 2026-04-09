@@ -59,7 +59,7 @@ export default function AboutPage() {
                 },
                 {
                   label: "データソース",
-                  value: "J-Quants API（前日OHLCV・財務データ）",
+                  value: "株価データAPI（前日OHLCV・財務データ）",
                 },
                 {
                   label: "発注",
