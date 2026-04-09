@@ -33,3 +33,16 @@ export type Trade = {
   strategy: string | null;
   strategy_name?: string | null;
 };
+
+export type Position = {
+  id: number;
+  date: string;
+  ticker: string;
+  quantity: number;
+  entry_price: number;
+  current_price: number | null;
+  unrealized_pnl: number | null;
+  side: "LONG" | "SHORT";
+  strategy: string | null;
+  updated_at: string;
+};

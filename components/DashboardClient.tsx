@@ -1,14 +1,15 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState } from "react";
 import PortfolioChart from "@/components/PortfolioChart";
 import AgentModal from "@/components/AgentModal";
 import Header from "@/components/Header";
-import type { PortfolioDaily, Trade } from "@/lib/supabase";
+import type { PortfolioDaily, Trade, Position } from "@/lib/supabase";
 
 type Props = {
   portfolio: PortfolioDaily[];
   trades: Trade[];
+  positions: Position[];
   baseCapital?: number;
 };
 
@@ -36,43 +37,6 @@ function calcStats(data: PortfolioDaily[]) {
   };
 }
 
-type Position = {
-  ticker: string;
-  quantity: number;
-  avgCost: number;
-  totalCost: number;
-  strategy: string | null;
-};
-
-function computePositions(trades: Trade[]): Position[] {
-  const posMap = new Map<string, { quantity: number; totalCost: number; strategy: string | null }>();
-  const sorted = [...trades].sort((a, b) => a.timestamp.localeCompare(b.timestamp));
-
-  for (const t of sorted) {
-    const ticker = t.ticker.replace(".T", "");
-    const pos = posMap.get(ticker) ?? { quantity: 0, totalCost: 0, strategy: t.strategy };
-    if (t.side === "BUY") {
-      pos.totalCost += t.notional ?? 0;
-      pos.quantity += t.quantity ?? 0;
-    } else if (t.side === "SELL" && pos.quantity > 0) {
-      const sellQty = Math.min(t.quantity ?? 0, pos.quantity);
-      const sellRatio = sellQty / pos.quantity;
-      pos.totalCost *= 1 - sellRatio;
-      pos.quantity -= sellQty;
-    }
-    posMap.set(ticker, pos);
-  }
-
-  return Array.from(posMap.entries())
-    .filter(([, pos]) => pos.quantity > 0)
-    .map(([ticker, pos]) => ({
-      ticker,
-      quantity: pos.quantity,
-      avgCost: pos.quantity > 0 ? Math.round(pos.totalCost / pos.quantity) : 0,
-      totalCost: Math.round(pos.totalCost),
-      strategy: pos.strategy,
-    }));
-}
 
 function CollapsibleSection({
   title,
@@ -113,15 +77,13 @@ function CollapsibleSection({
   );
 }
 
-export default function DashboardClient({ portfolio, trades }: Props) {
+export default function DashboardClient({ portfolio, trades, positions }: Props) {
   const [displayMode, setDisplayMode] = useState<"$" | "%">("%");
   const [modalOpen, setModalOpen] = useState(false);
 
   const stats = calcStats(portfolio);
   const totalReturn = stats ? stats.totalReturn * 100 : 0;
   const isPositive = totalReturn >= 0;
-
-  const positions = useMemo(() => computePositions(trades), [trades]);
 
   const benchmarkReturn = 0;
 
@@ -220,7 +182,7 @@ export default function DashboardClient({ portfolio, trades }: Props) {
                   <table className="w-full text-xs">
                     <thead>
                       <tr className="border-b border-gray-50">
-                        {["銘柄", "株数", "平均取得価格", "取得総額", "戦略"].map(h => (
+                        {["銘柄", "株数", "平均取得価格", "取得総額", "含み損益", "戦略"].map(h => (
                           <th key={h} className="px-4 py-2 text-left text-gray-400 font-medium">
                             {h}
                           </th>
@@ -228,25 +190,33 @@ export default function DashboardClient({ portfolio, trades }: Props) {
                       </tr>
                     </thead>
                     <tbody>
-                      {positions.map((p, i) => (
-                        <tr key={i} className="border-b border-gray-50 hover:bg-gray-50 transition-colors">
-                          <td className="px-4 py-2 font-semibold text-gray-800">{p.ticker}</td>
-                          <td className="px-4 py-2 text-gray-600">{p.quantity.toLocaleString()}株</td>
-                          <td className="px-4 py-2 text-gray-600 tabular-nums">
-                            ¥{p.avgCost.toLocaleString()}
-                          </td>
-                          <td className="px-4 py-2 text-gray-600 tabular-nums">
-                            ¥{p.totalCost.toLocaleString()}
-                          </td>
-                          <td className="px-4 py-2">
-                            {p.strategy && (
-                              <span className="bg-blue-50 text-blue-700 px-1.5 py-0.5 rounded text-xs font-medium">
-                                {p.strategy}
-                              </span>
-                            )}
-                          </td>
-                        </tr>
-                      ))}
+                      {positions.map((p, i) => {
+                        const ticker = p.ticker.replace(".T", "");
+                        const totalCost = p.entry_price * p.quantity;
+                        const pnl = p.unrealized_pnl ?? 0;
+                        return (
+                          <tr key={i} className="border-b border-gray-50 hover:bg-gray-50 transition-colors">
+                            <td className="px-4 py-2 font-semibold text-gray-800">{ticker}</td>
+                            <td className="px-4 py-2 text-gray-600">{p.quantity.toLocaleString()}株</td>
+                            <td className="px-4 py-2 text-gray-600 tabular-nums">
+                              ¥{Math.round(p.entry_price).toLocaleString()}
+                            </td>
+                            <td className="px-4 py-2 text-gray-600 tabular-nums">
+                              ¥{Math.round(totalCost).toLocaleString()}
+                            </td>
+                            <td className={`px-4 py-2 tabular-nums font-medium ${pnl >= 0 ? "text-emerald-600" : "text-red-500"}`}>
+                              {pnl >= 0 ? "+" : ""}¥{Math.round(pnl).toLocaleString()}
+                            </td>
+                            <td className="px-4 py-2">
+                              {p.strategy && (
+                                <span className="bg-blue-50 text-blue-700 px-1.5 py-0.5 rounded text-xs font-medium">
+                                  {p.strategy}
+                                </span>
+                              )}
+                            </td>
+                          </tr>
+                        );
+                      })}
                     </tbody>
                   </table>
                 </div>
