@@ -3,7 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>kabu-trader ダッシュボード</title>
+<title>kabu-trader | Claude Code 自動売買 Live</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='7' fill='%232563eb'/><rect x='5' y='18' width='6' height='10' rx='1' fill='white'/><rect x='13' y='12' width='6' height='16' rx='1' fill='white'/><rect x='21' y='7' width='6' height='21' rx='1' fill='white'/></svg>">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;600;700&family=Oxanium:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
@@ -103,17 +104,32 @@
 </head>
 <body>
 
-<header class="topbar">
-  <div class="topbar-brand">
-    <div class="brand-icon">KT</div>
-    <div>
-      <div class="brand-name">kabu-trader</div>
-      <div class="brand-sub">自動売買ダッシュボード</div>
-    </div>
-  </div>
-  <div class="topbar-status">
-    <div class="status-pill"><div class="status-dot"></div>稼働中</div>
-    <div class="topbar-date">データ基準日: 2026-04-07 ｜ 生成: 2026-04-09 19:09</div>
+<header style="background:#fff;border-bottom:1px solid #f3f4f6;position:sticky;top:0;z-index:20;">
+  <div style="max-width:80rem;margin:0 auto;padding:0 24px;height:56px;display:flex;align-items:center;justify-content:space-between;">
+    <a href="/" style="display:flex;align-items:center;gap:8px;text-decoration:none;opacity:1;transition:opacity .2s" onmouseover="this.style.opacity='.8'" onmouseout="this.style.opacity='1'">
+      <svg style="width:20px;height:20px;color:#1f2937" viewBox="0 0 24 24" fill="currentColor">
+        <rect x="2" y="12" width="4" height="10" rx="1"/>
+        <rect x="9" y="7" width="4" height="15" rx="1"/>
+        <rect x="16" y="3" width="4" height="19" rx="1"/>
+      </svg>
+      <span style="font-weight:600;color:#111827;font-size:14px;">kabu-trader</span>
+    </a>
+    <nav style="display:flex;align-items:center;gap:20px;font-size:14px;">
+      <a href="/about" style="color:#6b7280;text-decoration:none;transition:color .2s" onmouseover="this.style.color='#111827'" onmouseout="this.style.color='#6b7280'">概要</a>
+      <a href="/strategy" style="color:#6b7280;text-decoration:none;transition:color .2s" onmouseover="this.style.color='#111827'" onmouseout="this.style.color='#6b7280'">戦略</a>
+      <a href="https://note.com/mi_autolab" target="_blank" rel="noopener noreferrer" style="display:flex;align-items:center;gap:6px;color:#6b7280;text-decoration:none;transition:color .2s" onmouseover="this.style.color='#111827'" onmouseout="this.style.color='#6b7280'">
+        <svg style="width:14px;height:14px" viewBox="0 0 24 24" fill="currentColor">
+          <path d="M18 3H6C4.3 3 3 4.3 3 6v12c0 1.7 1.3 3 3 3h12c1.7 0 3-1.3 3-3V6c0-1.7-1.3-3-3-3zm-7 13H8v-2h3v2zm0-4H8v-2h3v2zm0-4H8V6h3v2zm6 8h-4v-2h4v2zm0-4h-4v-2h4v2zm0-4h-4V6h4v2z"/>
+        </svg>
+        note
+      </a>
+      <a href="https://twitter.com/miautolab" target="_blank" rel="noopener noreferrer" style="display:flex;align-items:center;gap:6px;color:#374151;font-weight:500;text-decoration:none;transition:color .2s" onmouseover="this.style.color='#111827'" onmouseout="this.style.color='#374151'">
+        <svg style="width:14px;height:14px" viewBox="0 0 24 24" fill="currentColor">
+          <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.739l7.737-8.835L1.254 2.25H8.08l4.259 5.629L18.244 2.25zm-1.161 17.52h1.833L7.084 4.126H5.117L17.083 19.77z"/>
+        </svg>
+        @miautolab
+      </a>
+    </nav>
   </div>
 </header>
 
