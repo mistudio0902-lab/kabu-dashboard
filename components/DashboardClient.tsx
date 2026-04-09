@@ -3,6 +3,7 @@
 import { useState } from "react";
 import PortfolioChart from "@/components/PortfolioChart";
 import AgentModal from "@/components/AgentModal";
+import Header from "@/components/Header";
 import type { PortfolioDaily, Trade } from "@/lib/supabase";
 
 type Props = {
@@ -44,34 +45,7 @@ export default function DashboardClient({ portfolio, trades }: Props) {
 
   return (
     <div className="min-h-screen" style={{ backgroundColor: "#faf8f6" }}>
-      {/* ヘッダー */}
-      <header className="bg-white border-b border-gray-100 sticky top-0 z-20">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 h-14 flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <svg className="w-5 h-5 text-gray-800" viewBox="0 0 24 24" fill="currentColor">
-              <rect x="2" y="12" width="4" height="10" rx="1" />
-              <rect x="9" y="7" width="4" height="15" rx="1" />
-              <rect x="16" y="3" width="4" height="19" rx="1" />
-            </svg>
-            <span className="font-semibold text-gray-900 text-sm">kabu-trader</span>
-          </div>
-          <nav className="flex items-center gap-6 text-sm text-gray-500">
-            <a href="#" className="hover:text-gray-900 transition-colors">概要</a>
-            <a href="#" className="hover:text-gray-900 transition-colors">戦略</a>
-            <a
-              href="https://twitter.com/miautolab"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="flex items-center gap-1.5 text-gray-700 hover:text-gray-900 font-medium transition-colors"
-            >
-              <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="currentColor">
-                <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.739l7.737-8.835L1.254 2.25H8.08l4.259 5.629L18.244 2.25zm-1.161 17.52h1.833L7.084 4.126H5.117L17.083 19.77z" />
-              </svg>
-              @miautolab をフォロー
-            </a>
-          </nav>
-        </div>
-      </header>
+      <Header />
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 py-6 flex gap-6">
         {/* メインエリア */}
