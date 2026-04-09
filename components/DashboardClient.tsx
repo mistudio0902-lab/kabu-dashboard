@@ -115,7 +115,7 @@ export default function DashboardClient({ portfolio, trades, positions, baseCapi
         </div>
 
         {/* パフォーマンス推移 + ポートフォリオ概要 */}
-        <div style={{ display: "grid", gridTemplateColumns: "2fr 1fr", gap: 20, marginBottom: 20 }}>
+        <div className="grid-chart-portfolio" style={{ display: "grid", gridTemplateColumns: "2fr 1fr", gap: 20, marginBottom: 20 }}>
 
           {/* パフォーマンス推移 */}
           <div className="rounded-xl overflow-hidden" style={{ background: "#fff", boxShadow: "0 4px 12px rgba(0,0,0,.08),0 2px 6px rgba(0,0,0,.05)" }}>
@@ -226,7 +226,7 @@ export default function DashboardClient({ portfolio, trades, positions, baseCapi
         </div>
 
         {/* KPI カード行 */}
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(4,1fr)", gap: 14, marginBottom: 20 }}>
+        <div className="grid-kpi" style={{ display: "grid", gridTemplateColumns: "repeat(4,1fr)", gap: 14, marginBottom: 20 }}>
           {[
             {
               label: "現在の評価総額",
@@ -415,7 +415,7 @@ export default function DashboardClient({ portfolio, trades, positions, baseCapi
             </div>
 
             {/* 3戦略 */}
-            <div style={{ display: "grid", gridTemplateColumns: "repeat(3,1fr)", gap: 14 }}>
+            <div className="grid-strategies" style={{ display: "grid", gridTemplateColumns: "repeat(3,1fr)", gap: 14 }}>
               {[
                 {
                   tag: "PEAD", sub: "Post-Earnings Announcement Drift",
@@ -490,6 +490,22 @@ export default function DashboardClient({ portfolio, trades, positions, baseCapi
         @keyframes shimmer {
           0% { background-position: 0% }
           100% { background-position: 200% }
+        }
+        @media (max-width: 768px) {
+          .grid-chart-portfolio {
+            grid-template-columns: 1fr !important;
+          }
+          .grid-kpi {
+            grid-template-columns: repeat(2, 1fr) !important;
+          }
+          .grid-strategies {
+            grid-template-columns: 1fr !important;
+          }
+        }
+        @media (max-width: 480px) {
+          .grid-kpi {
+            grid-template-columns: 1fr !important;
+          }
         }
       `}</style>
     </div>
