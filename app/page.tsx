@@ -7,6 +7,9 @@ export const revalidate = 3600;
 // 運用開始時の基準資金
 export const BASE_CAPITAL = 1_000_000;
 
+// ポートフォリオ表示開始日（¥1M入金日）
+export const PORTFOLIO_START_DATE = "2026-04-08";
+
 // T-N 営業日前の日付を計算（土日スキップ）
 function bizDaysBack(from: Date, n: number): Date {
   const d = new Date(from);
@@ -43,6 +46,7 @@ async function getData() {
       .from("portfolio_cumulative")
       .select("*")
       .order("date", { ascending: true })
+      .gte("date", PORTFOLIO_START_DATE)
       .lte("date", cutoff),
     supabase
       .from("trades")
