@@ -58,13 +58,8 @@ async function getData() {
 
   const rawPortfolio = (portfolioRes.data ?? []) as PortfolioDaily[];
 
-  // ¥1,000,000投入以降のデータのみ表示（入金操作を除外）
-  const filteredPortfolio = rawPortfolio.filter(
-    (d) => d.total_capital >= BASE_CAPITAL * 0.9
-  );
-
   // 累積リターンをBASE_CAPITAL基準で再計算
-  const portfolio = filteredPortfolio.map((d) => ({
+  const portfolio = rawPortfolio.map((d) => ({
     ...d,
     cumulative_return: (d.total_capital - BASE_CAPITAL) / BASE_CAPITAL,
   }));
