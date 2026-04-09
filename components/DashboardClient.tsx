@@ -99,7 +99,11 @@ export default function DashboardClient({ portfolio, trades, positions, baseCapi
           border: "1px solid #c5d8fb",
           padding: "14px 24px",
         }}>
-          <div style={{ fontSize: 22 }}>🤖</div>
+          <div style={{ width: 36, height: 36, flexShrink: 0, display: "flex", alignItems: "center", justifyContent: "center", background: "#1a73e8", borderRadius: 8 }}>
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <rect x="3" y="11" width="18" height="10" rx="2"/><circle cx="12" cy="5" r="2"/><line x1="12" y1="7" x2="12" y2="11"/><line x1="8" y1="15" x2="8" y2="15"/><line x1="12" y1="15" x2="12" y2="15"/><line x1="16" y1="15" x2="16" y2="15"/>
+            </svg>
+          </div>
           <div>
             <div style={{ fontSize: 14, fontWeight: 700, color: "#1a56c4", marginBottom: 2 }}>
               AIが自律的に売買する株式トレードの実績をリアルタイム公開しています
@@ -117,7 +121,11 @@ export default function DashboardClient({ portfolio, trades, positions, baseCapi
           <div className="rounded-xl overflow-hidden" style={{ background: "#fff", boxShadow: "0 4px 12px rgba(0,0,0,.08),0 2px 6px rgba(0,0,0,.05)" }}>
             <div className="flex items-center justify-between" style={{ padding: "20px 28px 18px", borderBottom: "1px solid #e8eaed" }}>
               <div className="flex items-center gap-2.5">
-                <div className="flex items-center justify-center rounded-md text-base" style={{ width: 32, height: 32, background: "#fef3e2" }}>📈</div>
+                <div className="flex items-center justify-center rounded-md" style={{ width: 32, height: 32, background: "#fef3e2" }}>
+                  <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                    <polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/><polyline points="16 7 22 7 22 13"/>
+                  </svg>
+                </div>
                 <div>
                   <div style={{ fontSize: 15, fontWeight: 700, color: "#202124" }}>パフォーマンス推移</div>
                   <div style={{ fontSize: 12, color: "#9aa0a6", marginTop: 1 }}>
@@ -168,7 +176,11 @@ export default function DashboardClient({ portfolio, trades, positions, baseCapi
           <div className="rounded-xl overflow-hidden" style={{ background: "#fff", boxShadow: "0 4px 12px rgba(0,0,0,.08),0 2px 6px rgba(0,0,0,.05)" }}>
             <div className="flex items-center justify-between" style={{ padding: "20px 28px 18px", borderBottom: "1px solid #e8eaed" }}>
               <div className="flex items-center gap-2.5">
-                <div className="flex items-center justify-center rounded-md text-base" style={{ width: 32, height: 32, background: "#e8f0fe" }}>📊</div>
+                <div className="flex items-center justify-center rounded-md" style={{ width: 32, height: 32, background: "#e8f0fe" }}>
+                  <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#1a73e8" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                    <line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/><line x1="2" y1="20" x2="22" y2="20"/>
+                  </svg>
+                </div>
                 <div>
                   <div style={{ fontSize: 15, fontWeight: 700, color: "#202124" }}>ポートフォリオ概要</div>
                   <div style={{ fontSize: 12, color: "#9aa0a6", marginTop: 1 }}>
@@ -213,12 +225,118 @@ export default function DashboardClient({ portfolio, trades, positions, baseCapi
           </div>
         </div>
 
+        {/* 保有ポジション */}
+        <div className="mb-3">
+          <CollapsibleSection title="保有ポジション" count={positions.length}>
+            {positions.length === 0 ? (
+              <div style={{ padding: "32px 0", textAlign: "center", fontSize: 13, color: "#9aa0a6" }}>
+                保有銘柄なし（2日遅延公開）
+              </div>
+            ) : (
+              <div className="overflow-x-auto">
+                <table style={{ width: "100%", borderCollapse: "collapse" }}>
+                  <thead>
+                    <tr style={{ background: "#f8f9fa" }}>
+                      {["銘柄", "株数", "平均取得価格", "取得総額", "含み損益", "戦略"].map(h => (
+                        <th key={h} style={{ padding: "10px 20px", textAlign: "left", fontSize: 11, fontWeight: 600, color: "#9aa0a6", textTransform: "uppercase", letterSpacing: ".8px", borderBottom: "1px solid #e8eaed" }}>
+                          {h}
+                        </th>
+                      ))}
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {positions.map((p, i) => {
+                      const ticker = p.ticker.replace(".T", "");
+                      const totalCost = p.entry_price * p.quantity;
+                      const pnl = p.unrealized_pnl ?? 0;
+                      return (
+                        <tr key={i} style={{ borderBottom: "1px solid #e8eaed" }} onMouseEnter={e => (e.currentTarget.style.background = "#f8fafe")} onMouseLeave={e => (e.currentTarget.style.background = "transparent")}>
+                          <td style={{ padding: "14px 20px", fontFamily: "monospace", fontSize: 14, fontWeight: 700, color: "#1a73e8" }}>{ticker}</td>
+                          <td style={{ padding: "14px 20px", fontFamily: "monospace", fontSize: 13, color: "#5f6368" }}>{p.quantity.toLocaleString()}株</td>
+                          <td style={{ padding: "14px 20px", fontFamily: "monospace", fontSize: 13, color: "#5f6368" }}>¥{Math.round(p.entry_price).toLocaleString()}</td>
+                          <td style={{ padding: "14px 20px", fontFamily: "monospace", fontSize: 13, color: "#5f6368" }}>¥{Math.round(totalCost).toLocaleString()}</td>
+                          <td style={{ padding: "14px 20px" }}>
+                            <span style={{ display: "inline-flex", alignItems: "center", padding: "3px 8px", borderRadius: 4, fontFamily: "monospace", fontSize: 12, fontWeight: 600, background: pnl >= 0 ? "#e6f4ea" : "#fce8e6", color: pnl >= 0 ? "#34a853" : "#ea4335" }}>
+                              {pnl >= 0 ? "+" : ""}¥{Math.round(pnl).toLocaleString()}
+                            </span>
+                          </td>
+                          <td style={{ padding: "14px 20px" }}>
+                            {p.strategy && (
+                              <span style={{ fontSize: 11, padding: "2px 8px", borderRadius: 4, background: "#e8f0fe", color: "#1a73e8", fontWeight: 500 }}>
+                                {p.strategy}
+                              </span>
+                            )}
+                          </td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
+              </div>
+            )}
+          </CollapsibleSection>
+        </div>
+
+        {/* 取引履歴 */}
+        <div className="mb-5">
+          <CollapsibleSection title="取引履歴" count={trades.length}>
+            {trades.length === 0 ? (
+              <div style={{ padding: "32px 0", textAlign: "center", fontSize: 13, color: "#9aa0a6" }}>
+                取引データなし（2日遅延公開）
+              </div>
+            ) : (
+              <div className="overflow-x-auto">
+                <table style={{ width: "100%", borderCollapse: "collapse" }}>
+                  <thead>
+                    <tr style={{ background: "#f8f9fa" }}>
+                      {["日付", "銘柄", "売買", "株数", "単価", "約定金額"].map(h => (
+                        <th key={h} style={{ padding: "10px 20px", textAlign: "left", fontSize: 11, fontWeight: 600, color: "#9aa0a6", textTransform: "uppercase", letterSpacing: ".8px", borderBottom: "1px solid #e8eaed" }}>
+                          {h}
+                        </th>
+                      ))}
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {trades.map((t, i) => {
+                      const ticker = t.ticker.replace(".T", "");
+                      return (
+                        <tr key={i} style={{ borderBottom: "1px solid #e8eaed" }} onMouseEnter={e => (e.currentTarget.style.background = "#f8fafe")} onMouseLeave={e => (e.currentTarget.style.background = "transparent")}>
+                          <td style={{ padding: "14px 20px", fontFamily: "monospace", fontSize: 12, color: "#5f6368" }}>{t.date}</td>
+                          <td style={{ padding: "14px 20px", fontFamily: "monospace", fontSize: 14, fontWeight: 700, color: "#1a73e8" }}>{ticker}</td>
+                          <td style={{ padding: "14px 20px" }}>
+                            <span style={{ display: "inline-block", padding: "2px 8px", borderRadius: 4, fontSize: 11, fontWeight: 700, fontFamily: "monospace", background: t.side === "BUY" ? "#e8f0fe" : "#fce8e6", color: t.side === "BUY" ? "#1a73e8" : "#ea4335" }}>
+                              {t.side === "BUY" ? "買" : "売"}
+                            </span>
+                          </td>
+                          <td style={{ padding: "14px 20px", fontFamily: "monospace", fontSize: 13, color: "#5f6368" }}>
+                            {t.quantity?.toLocaleString() ?? "—"}株
+                          </td>
+                          <td style={{ padding: "14px 20px", fontFamily: "monospace", fontSize: 13, color: "#5f6368" }}>
+                            {t.price != null ? `¥${t.price.toLocaleString()}` : "—"}
+                          </td>
+                          <td style={{ padding: "14px 20px", fontFamily: "monospace", fontSize: 13, color: "#5f6368" }}>
+                            {t.notional != null ? `¥${t.notional.toLocaleString()}` : "—"}
+                          </td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
+              </div>
+            )}
+          </CollapsibleSection>
+        </div>
+
         {/* 採用戦略 */}
         <div className="rounded-xl overflow-hidden mb-5" style={{ background: "#fff", boxShadow: "0 4px 12px rgba(0,0,0,.08),0 2px 6px rgba(0,0,0,.05)" }}>
           <div style={{ padding: "20px 28px 18px", borderBottom: "1px solid #e8eaed" }}>
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2.5">
-                <div className="flex items-center justify-center rounded-md text-base" style={{ width: 32, height: 32, background: "#e6f4ea" }}>🎯</div>
+                <div className="flex items-center justify-center rounded-md" style={{ width: 32, height: 32, background: "#e6f4ea" }}>
+                  <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#34a853" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                    <circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/>
+                  </svg>
+                </div>
                 <div>
                   <div style={{ fontSize: 15, fontWeight: 700, color: "#202124" }}>採用戦略 &amp; 概要</div>
                   <div style={{ fontSize: 12, color: "#9aa0a6", marginTop: 1 }}>3戦略を並列運用 / シグナル自動スクリーニング</div>
@@ -316,107 +434,6 @@ export default function DashboardClient({ portfolio, trades, positions, baseCapi
           本サイトは投資成績の公開を目的としており、投資助言を行うものではありません。掲載情報は参考目的のみであり、投資判断はご自身の責任において行ってください。過去の運用実績は将来の成果を保証するものではありません。
         </div>
 
-        {/* 保有ポジション */}
-        <div className="mb-3">
-          <CollapsibleSection title="保有ポジション" count={positions.length}>
-            {positions.length === 0 ? (
-              <div style={{ padding: "32px 0", textAlign: "center", fontSize: 13, color: "#9aa0a6" }}>
-                保有銘柄なし（2日遅延公開）
-              </div>
-            ) : (
-              <div className="overflow-x-auto">
-                <table style={{ width: "100%", borderCollapse: "collapse" }}>
-                  <thead>
-                    <tr style={{ background: "#f8f9fa" }}>
-                      {["銘柄", "株数", "平均取得価格", "取得総額", "含み損益", "戦略"].map(h => (
-                        <th key={h} style={{ padding: "10px 20px", textAlign: "left", fontSize: 11, fontWeight: 600, color: "#9aa0a6", textTransform: "uppercase", letterSpacing: ".8px", borderBottom: "1px solid #e8eaed" }}>
-                          {h}
-                        </th>
-                      ))}
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {positions.map((p, i) => {
-                      const ticker = p.ticker.replace(".T", "");
-                      const totalCost = p.entry_price * p.quantity;
-                      const pnl = p.unrealized_pnl ?? 0;
-                      return (
-                        <tr key={i} style={{ borderBottom: "1px solid #e8eaed" }} onMouseEnter={e => (e.currentTarget.style.background = "#f8fafe")} onMouseLeave={e => (e.currentTarget.style.background = "transparent")}>
-                          <td style={{ padding: "14px 20px", fontFamily: "monospace", fontSize: 14, fontWeight: 700, color: "#1a73e8" }}>{ticker}</td>
-                          <td style={{ padding: "14px 20px", fontFamily: "monospace", fontSize: 13, color: "#5f6368" }}>{p.quantity.toLocaleString()}株</td>
-                          <td style={{ padding: "14px 20px", fontFamily: "monospace", fontSize: 13, color: "#5f6368" }}>¥{Math.round(p.entry_price).toLocaleString()}</td>
-                          <td style={{ padding: "14px 20px", fontFamily: "monospace", fontSize: 13, color: "#5f6368" }}>¥{Math.round(totalCost).toLocaleString()}</td>
-                          <td style={{ padding: "14px 20px" }}>
-                            <span style={{ display: "inline-flex", alignItems: "center", padding: "3px 8px", borderRadius: 4, fontFamily: "monospace", fontSize: 12, fontWeight: 600, background: pnl >= 0 ? "#e6f4ea" : "#fce8e6", color: pnl >= 0 ? "#34a853" : "#ea4335" }}>
-                              {pnl >= 0 ? "+" : ""}¥{Math.round(pnl).toLocaleString()}
-                            </span>
-                          </td>
-                          <td style={{ padding: "14px 20px" }}>
-                            {p.strategy && (
-                              <span style={{ fontSize: 11, padding: "2px 8px", borderRadius: 4, background: "#e8f0fe", color: "#1a73e8", fontWeight: 500 }}>
-                                {p.strategy}
-                              </span>
-                            )}
-                          </td>
-                        </tr>
-                      );
-                    })}
-                  </tbody>
-                </table>
-              </div>
-            )}
-          </CollapsibleSection>
-        </div>
-
-        {/* 取引履歴 */}
-        <div>
-          <CollapsibleSection title="取引履歴" count={trades.length}>
-            {trades.length === 0 ? (
-              <div style={{ padding: "32px 0", textAlign: "center", fontSize: 13, color: "#9aa0a6" }}>
-                取引データなし（2日遅延公開）
-              </div>
-            ) : (
-              <div className="overflow-x-auto">
-                <table style={{ width: "100%", borderCollapse: "collapse" }}>
-                  <thead>
-                    <tr style={{ background: "#f8f9fa" }}>
-                      {["日付", "銘柄", "売買", "株数", "単価", "約定金額"].map(h => (
-                        <th key={h} style={{ padding: "10px 20px", textAlign: "left", fontSize: 11, fontWeight: 600, color: "#9aa0a6", textTransform: "uppercase", letterSpacing: ".8px", borderBottom: "1px solid #e8eaed" }}>
-                          {h}
-                        </th>
-                      ))}
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {trades.map((t, i) => {
-                      const ticker = t.ticker.replace(".T", "");
-                      return (
-                        <tr key={i} style={{ borderBottom: "1px solid #e8eaed" }} onMouseEnter={e => (e.currentTarget.style.background = "#f8fafe")} onMouseLeave={e => (e.currentTarget.style.background = "transparent")}>
-                          <td style={{ padding: "14px 20px", fontFamily: "monospace", fontSize: 12, color: "#5f6368" }}>{t.date}</td>
-                          <td style={{ padding: "14px 20px", fontFamily: "monospace", fontSize: 14, fontWeight: 700, color: "#1a73e8" }}>{ticker}</td>
-                          <td style={{ padding: "14px 20px" }}>
-                            <span style={{ display: "inline-block", padding: "2px 8px", borderRadius: 4, fontSize: 11, fontWeight: 700, fontFamily: "monospace", background: t.side === "BUY" ? "#e8f0fe" : "#fce8e6", color: t.side === "BUY" ? "#1a73e8" : "#ea4335" }}>
-                              {t.side === "BUY" ? "買" : "売"}
-                            </span>
-                          </td>
-                          <td style={{ padding: "14px 20px", fontFamily: "monospace", fontSize: 13, color: "#5f6368" }}>
-                            {t.quantity?.toLocaleString() ?? "—"}株
-                          </td>
-                          <td style={{ padding: "14px 20px", fontFamily: "monospace", fontSize: 13, color: "#5f6368" }}>
-                            {t.price != null ? `¥${t.price.toLocaleString()}` : "—"}
-                          </td>
-                          <td style={{ padding: "14px 20px", fontFamily: "monospace", fontSize: 13, color: "#5f6368" }}>
-                            {t.notional != null ? `¥${t.notional.toLocaleString()}` : "—"}
-                          </td>
-                        </tr>
-                      );
-                    })}
-                  </tbody>
-                </table>
-              </div>
-            )}
-          </CollapsibleSection>
-        </div>
 
       </main>
 
