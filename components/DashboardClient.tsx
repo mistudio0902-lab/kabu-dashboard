@@ -96,7 +96,7 @@ export default function DashboardClient({ portfolio, trades, positions, baseCapi
     <div style={{ minHeight: "100vh", background: "#f8f9fa", fontFamily: "'Noto Sans JP', sans-serif" }}>
       <Header />
 
-      <main style={{ maxWidth: 960, margin: "0 auto", padding: "28px 24px 60px" }}>
+      <main style={{ maxWidth: 1280, margin: "0 auto", padding: "28px 24px 60px" }}>
 
         {/* HERO */}
         <div className="rounded-xl mb-5 relative overflow-hidden" style={{
