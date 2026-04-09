@@ -82,14 +82,9 @@ function CollapsibleSection({
 export default function DashboardClient({ portfolio, trades, positions, baseCapital }: Props) {
   const base = baseCapital ?? BASE_CAPITAL;
   const stats = calcStats(portfolio, base);
-
-  const totalReturn = stats ? stats.totalReturn * 100 : 0;
-  const isPositive = totalReturn >= 0;
-  const pnlColor = isPositive ? "#34a853" : "#ea4335";
-  const pnlBg = isPositive ? "#e6f4ea" : "#fce8e6";
+  const [chartMode, setChartMode] = useState<"%" | "$">("%");
 
   const unrealized = stats?.unrealizedPnl ?? 0;
-  const unrColor = unrealized >= 0 ? "#34a853" : "#ea4335";
   const realized = stats?.realizedPnl ?? 0;
 
   return (
@@ -98,111 +93,76 @@ export default function DashboardClient({ portfolio, trades, positions, baseCapi
 
       <main style={{ maxWidth: 1280, margin: "0 auto", padding: "28px 24px 60px" }}>
 
-        {/* HERO */}
-        <div className="rounded-xl mb-5 relative overflow-hidden" style={{
-          background: "#fff",
-          boxShadow: "0 4px 12px rgba(0,0,0,.08),0 2px 6px rgba(0,0,0,.05)",
-          padding: "36px 40px 32px",
+        {/* 説明バナー */}
+        <div className="rounded-xl mb-4 flex items-center gap-4" style={{
+          background: "#e8f0fe",
+          border: "1px solid #c5d8fb",
+          padding: "14px 24px",
         }}>
-          {/* gradient top border */}
-          <div className="absolute top-0 left-0 right-0" style={{
-            height: 3,
-            background: "linear-gradient(90deg,#1a73e8 0%,#34a853 50%,#1a73e8 100%)",
-            backgroundSize: "200%",
-            animation: "shimmer 4s linear infinite",
-          }} />
-
-          <div className="flex items-start justify-between mb-7" style={{ flexWrap: "wrap", gap: 20 }}>
-            <div>
-              <div style={{ fontSize: 11, fontWeight: 500, color: "#9aa0a6", textTransform: "uppercase", letterSpacing: "1.2px", marginBottom: 8 }}>
-                現在の評価総額（T-2基準）
-              </div>
-              <div style={{ fontFamily: "monospace", fontSize: 64, fontWeight: 700, color: "#202124", lineHeight: 1, letterSpacing: "-2px" }}>
-                <span style={{ fontSize: 36, fontWeight: 500, color: "#5f6368", marginRight: 4 }}>¥</span>
-                {stats ? stats.trueTotal.toLocaleString() : "1,000,000"}
-              </div>
-              <div className="flex items-center gap-2" style={{ marginTop: 10 }}>
-                <span style={{ fontFamily: "monospace", fontSize: 20, fontWeight: 600, color: pnlColor }}>
-                  {isPositive ? "+" : ""}¥{stats ? (stats.trueTotal - base).toLocaleString() : "0"}
-                </span>
-                <span style={{ fontFamily: "monospace", fontSize: 13, fontWeight: 500, padding: "2px 10px", borderRadius: 20, background: pnlBg, color: pnlColor }}>
-                  {isPositive ? "+" : ""}{totalReturn.toFixed(2)}%
-                </span>
-                <span style={{ fontSize: 11, color: "#9aa0a6" }}>基準資金比</span>
-              </div>
-              <div style={{ fontSize: 12, color: "#9aa0a6", marginTop: 5 }}>
-                基準資金: <span style={{ color: "#5f6368", fontWeight: 500 }}>¥{base.toLocaleString()}</span>
-                　開始日: <span style={{ color: "#5f6368", fontWeight: 500 }}>{stats?.startDate ?? "—"}</span>
-              </div>
+          <div style={{ fontSize: 22 }}>🤖</div>
+          <div>
+            <div style={{ fontSize: 14, fontWeight: 700, color: "#1a56c4", marginBottom: 2 }}>
+              AIが自律的に売買する株式トレードの実績をリアルタイム公開しています
             </div>
-
-            {/* VS TOPIX badge */}
-            <div style={{
-              display: "inline-flex", flexDirection: "column", alignItems: "center",
-              border: `1px solid ${pnlColor === "#34a853" ? "#a5d6a7" : "#ef9a9a"}`,
-              borderRadius: 8, padding: "12px 20px",
-              background: pnlBg,
-            }}>
-              <div style={{ fontSize: 10, fontWeight: 600, textTransform: "uppercase", letterSpacing: 1, color: pnlColor }}>
-                VS TOPIX（期間累計）
-              </div>
-              <div style={{ fontFamily: "monospace", fontSize: 26, fontWeight: 700, color: pnlColor, lineHeight: 1.2 }}>
-                {isPositive ? "+" : ""}{totalReturn.toFixed(1)}%
-              </div>
-              <div style={{ fontSize: 11, color: pnlColor }}>
-                {isPositive ? "アウトパフォーム ↑" : "アンダーパフォーム ↓"}
-              </div>
-            </div>
-          </div>
-
-          {/* 4 metric cards */}
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(4,1fr)", gap: 14 }}>
-            {/* 売買損益（確定） */}
-            <div className="rounded-lg relative" style={{ background: "#f8f9fa", border: "1px solid #e8eaed", padding: "16px 20px", paddingBottom: 20 }}>
-              <div style={{ position: "absolute", bottom: 0, left: 20, right: 20, height: 2, borderRadius: "0 0 2px 2px", background: "#1a73e8" }} />
-              <div style={{ fontSize: 11, fontWeight: 500, color: "#9aa0a6", textTransform: "uppercase", letterSpacing: ".8px", marginBottom: 6 }}>売買損益（確定）</div>
-              <div style={{ fontFamily: "monospace", fontSize: 24, fontWeight: 700, color: realized === 0 ? "#9aa0a6" : realized > 0 ? "#34a853" : "#ea4335", lineHeight: 1, marginBottom: 4 }}>
-                {realized >= 0 ? "" : "-"}¥{Math.abs(realized).toLocaleString()}
-              </div>
-              <div style={{ fontSize: 11, color: "#9aa0a6" }}>入金・出金を除く純粋な売買差益</div>
-            </div>
-
-            {/* 含み損益 */}
-            <div className="rounded-lg relative" style={{ background: "#f8f9fa", border: "1px solid #e8eaed", padding: "16px 20px", paddingBottom: 20 }}>
-              <div style={{ position: "absolute", bottom: 0, left: 20, right: 20, height: 2, borderRadius: "0 0 2px 2px", background: "#34a853" }} />
-              <div style={{ fontSize: 11, fontWeight: 500, color: "#9aa0a6", textTransform: "uppercase", letterSpacing: ".8px", marginBottom: 6 }}>含み損益</div>
-              <div style={{ fontFamily: "monospace", fontSize: 24, fontWeight: 700, color: unrColor, lineHeight: 1, marginBottom: 4 }}>
-                {unrealized >= 0 ? "+" : ""}¥{unrealized.toLocaleString()}
-              </div>
-              <div style={{ fontSize: 11, color: "#9aa0a6" }}>
-                {stats ? `${(unrealized / base * 100).toFixed(2)}%　` : ""}保有{positions.length}銘柄の評価損益
-              </div>
-            </div>
-
-            {/* 買付余力 */}
-            <div className="rounded-lg relative" style={{ background: "#f8f9fa", border: "1px solid #e8eaed", padding: "16px 20px", paddingBottom: 20 }}>
-              <div style={{ position: "absolute", bottom: 0, left: 20, right: 20, height: 2, borderRadius: "0 0 2px 2px", background: "#fbbc04" }} />
-              <div style={{ fontSize: 11, fontWeight: 500, color: "#9aa0a6", textTransform: "uppercase", letterSpacing: ".8px", marginBottom: 6 }}>買付余力</div>
-              <div style={{ fontFamily: "monospace", fontSize: 24, fontWeight: 700, color: "#202124", lineHeight: 1, marginBottom: 4 }}>—</div>
-              <div style={{ fontSize: 11, color: "#9aa0a6" }}>リアルタイム残高はAPIから取得</div>
-            </div>
-
-            {/* 運用期間 */}
-            <div className="rounded-lg relative" style={{ background: "#f8f9fa", border: "1px solid #e8eaed", padding: "16px 20px", paddingBottom: 20 }}>
-              <div style={{ position: "absolute", bottom: 0, left: 20, right: 20, height: 2, borderRadius: "0 0 2px 2px", background: "#e8eaed" }} />
-              <div style={{ fontSize: 11, fontWeight: 500, color: "#9aa0a6", textTransform: "uppercase", letterSpacing: ".8px", marginBottom: 6 }}>運用期間</div>
-              <div style={{ fontFamily: "monospace", fontSize: 24, fontWeight: 700, color: "#5f6368", lineHeight: 1, marginBottom: 4 }}>
-                {stats?.opDays ?? "—"}<span style={{ fontSize: 16, fontFamily: "sans-serif" }}>日</span>
-              </div>
-              <div style={{ fontSize: 11, color: "#9aa0a6" }}>
-                {stats ? `${stats.startDate} 〜 ${stats.endDate}` : "—"}
-              </div>
+            <div style={{ fontSize: 12, color: "#3b6ec0", lineHeight: 1.6 }}>
+              人間の判断を介さず、独自アルゴリズム（PEAD・売買代金急増・テクニカルモメンタム）によりシグナル検知から発注まで全自動で運用。成績は加工なしで公開しています。
             </div>
           </div>
         </div>
 
-        {/* ポートフォリオ概要 + 採用戦略 */}
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 20, marginBottom: 20 }}>
+        {/* パフォーマンス推移 + ポートフォリオ概要 */}
+        <div style={{ display: "grid", gridTemplateColumns: "2fr 1fr", gap: 20, marginBottom: 20 }}>
+
+          {/* パフォーマンス推移 */}
+          <div className="rounded-xl overflow-hidden" style={{ background: "#fff", boxShadow: "0 4px 12px rgba(0,0,0,.08),0 2px 6px rgba(0,0,0,.05)" }}>
+            <div className="flex items-center justify-between" style={{ padding: "20px 28px 18px", borderBottom: "1px solid #e8eaed" }}>
+              <div className="flex items-center gap-2.5">
+                <div className="flex items-center justify-center rounded-md text-base" style={{ width: 32, height: 32, background: "#fef3e2" }}>📈</div>
+                <div>
+                  <div style={{ fontSize: 15, fontWeight: 700, color: "#202124" }}>パフォーマンス推移</div>
+                  <div style={{ fontSize: 12, color: "#9aa0a6", marginTop: 1 }}>
+                    基準資金 ¥{base.toLocaleString()} スタートで正規化（T-2データ）
+                  </div>
+                </div>
+              </div>
+              <div className="flex items-center gap-2">
+                <span style={{ fontSize: 11, fontWeight: 600, padding: "3px 10px", borderRadius: 20, background: "#f1f3f4", color: "#5f6368" }}>TOPIX 期間累計</span>
+                <div className="flex rounded-lg overflow-hidden" style={{ border: "1px solid #e8eaed" }}>
+                  {(["%", "$"] as const).map((mode) => (
+                    <button
+                      key={mode}
+                      onClick={() => setChartMode(mode)}
+                      style={{
+                        padding: "4px 12px",
+                        fontSize: 12,
+                        fontWeight: 600,
+                        background: chartMode === mode ? "#1a73e8" : "#fff",
+                        color: chartMode === mode ? "#fff" : "#5f6368",
+                        border: "none",
+                        cursor: "pointer",
+                        transition: "background .15s",
+                      }}
+                    >
+                      {mode === "%" ? "%" : "¥"}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            </div>
+            <div style={{ padding: "20px 28px" }}>
+              <div className="flex items-center gap-5 mb-4">
+                <div className="flex items-center gap-2" style={{ fontSize: 13, color: "#5f6368" }}>
+                  <div style={{ width: 28, height: 3, borderRadius: 2, background: "#1a73e8" }} />
+                  kabu-trader
+                </div>
+                <div className="flex items-center gap-2" style={{ fontSize: 13, color: "#5f6368" }}>
+                  <div style={{ width: 28, height: 2, background: "repeating-linear-gradient(90deg,#9aa0a6 0,#9aa0a6 5px,transparent 5px,transparent 10px)" }} />
+                  TOPIX
+                </div>
+              </div>
+              <PortfolioChart data={portfolio} displayMode={chartMode} />
+            </div>
+          </div>
 
           {/* ポートフォリオ概要 */}
           <div className="rounded-xl overflow-hidden" style={{ background: "#fff", boxShadow: "0 4px 12px rgba(0,0,0,.08),0 2px 6px rgba(0,0,0,.05)" }}>
@@ -251,94 +211,109 @@ export default function DashboardClient({ portfolio, trades, positions, baseCapi
               <span>毎日18:00に前々営業日（T-2）のデータで自動更新</span>
             </div>
           </div>
+        </div>
 
-          {/* 採用戦略 */}
-          <div className="rounded-xl overflow-hidden" style={{ background: "#fff", boxShadow: "0 4px 12px rgba(0,0,0,.08),0 2px 6px rgba(0,0,0,.05)" }}>
-            <div style={{ padding: "20px 28px 18px", borderBottom: "1px solid #e8eaed" }}>
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2.5">
-                  <div className="flex items-center justify-center rounded-md text-base" style={{ width: 32, height: 32, background: "#e6f4ea" }}>🎯</div>
-                  <div>
-                    <div style={{ fontSize: 15, fontWeight: 700, color: "#202124" }}>採用戦略</div>
-                    <div style={{ fontSize: 12, color: "#9aa0a6", marginTop: 1 }}>3戦略を並列運用 / シグナル自動スクリーニング</div>
-                  </div>
+        {/* 採用戦略 */}
+        <div className="rounded-xl overflow-hidden mb-5" style={{ background: "#fff", boxShadow: "0 4px 12px rgba(0,0,0,.08),0 2px 6px rgba(0,0,0,.05)" }}>
+          <div style={{ padding: "20px 28px 18px", borderBottom: "1px solid #e8eaed" }}>
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2.5">
+                <div className="flex items-center justify-center rounded-md text-base" style={{ width: 32, height: 32, background: "#e6f4ea" }}>🎯</div>
+                <div>
+                  <div style={{ fontSize: 15, fontWeight: 700, color: "#202124" }}>採用戦略 &amp; 概要</div>
+                  <div style={{ fontSize: 12, color: "#9aa0a6", marginTop: 1 }}>3戦略を並列運用 / シグナル自動スクリーニング</div>
                 </div>
               </div>
               <a
                 href="https://note.com/mi_autolab"
                 target="_blank"
                 rel="noopener noreferrer"
-                style={{ display: "inline-block", marginTop: 10, fontSize: 11, fontWeight: 600, padding: "4px 14px", borderRadius: 20, background: "#fff3e0", color: "#e65100", border: "1px solid #ffcc80", textDecoration: "none", whiteSpace: "nowrap" }}
+                style={{ fontSize: 11, fontWeight: 600, padding: "4px 14px", borderRadius: 20, background: "#fff3e0", color: "#e65100", border: "1px solid #ffcc80", textDecoration: "none", whiteSpace: "nowrap" }}
               >
                 📝 noteにて実践方法公開中！
               </a>
             </div>
-            <div style={{ padding: "16px 20px", display: "flex", flexDirection: "column", gap: 10 }}>
+          </div>
+
+          <div style={{ padding: "20px 28px", display: "flex", flexDirection: "column", gap: 20 }}>
+
+            {/* なぜ公開するのか */}
+            <div style={{ padding: "16px 20px", background: "#f8f9fa", borderRadius: 10, border: "1px solid #e8eaed" }}>
+              <div style={{ fontSize: 13, fontWeight: 700, color: "#202124", marginBottom: 6 }}>なぜ公開するのか</div>
+              <p style={{ fontSize: 13, color: "#5f6368", margin: 0, lineHeight: 1.7 }}>
+                「AIが本当に株式市場で通用するのか」という問いに、実資金で答えを出すプロジェクトです。
+                バックテストやシミュレーションではなく、リアルマネーでの実績をすべて公開します。
+                銘柄名は<strong style={{ color: "#202124" }}>2日遅延</strong>で公開（インサイダー取引防止）。
+              </p>
+            </div>
+
+            {/* 3戦略 */}
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(3,1fr)", gap: 14 }}>
               {[
                 {
-                  tag: "PEAD",
-                  tagColor: "#1a73e8",
-                  tagBg: "#e8f0fe",
+                  tag: "PEAD", sub: "Post-Earnings Announcement Drift",
+                  tagColor: "#1a73e8", tagBg: "#e8f0fe",
                   title: "決算モメンタム戦略",
-                  desc: "決算発表後の業績上方修正銘柄をスコアリングし、翌営業日に買い、数日のドリフトを狙う短期戦略。",
+                  desc: "決算発表後の業績上方修正銘柄をサプライズ率でスコアリングし、翌営業日の寄付きで買い。発表後に株価がサプライズの方向へ数日ドリフトする現象（PEAD）を利用する短期戦略。",
                 },
                 {
-                  tag: "Turnover",
-                  tagColor: "#34a853",
-                  tagBg: "#e6f4ea",
+                  tag: "Turnover", sub: "Turnover Momentum",
+                  tagColor: "#34a853", tagBg: "#e6f4ea",
                   title: "売買代金急増戦略",
-                  desc: "売買代金が過去平均から急増した銘柄を検知し、需給変化による短期的な価格インパクトを取る戦略。",
+                  desc: "前日の売買代金が過去平均から急増した銘柄を検知し、翌営業日の寄付きで買い。機関投資家の参入やトレンド発生初期に伴う需給変化を捉える短期戦略。",
                 },
                 {
-                  tag: "Momentum",
-                  tagColor: "#ea4335",
-                  tagBg: "#fce8e6",
+                  tag: "Momentum", sub: "Multi-Factor Technical",
+                  tagColor: "#ea4335", tagBg: "#fce8e6",
                   title: "テクニカルモメンタム戦略",
-                  desc: "出来高・板情報需給・価格モメンタム・移動平均の複合シグナルで銘柄を選定する短期テクニカル戦略。",
+                  desc: "出来高急増・板情報需給・価格モメンタムの質・移動平均位置の4要素を合成してスコア化。上位銘柄を翌営業日の寄付きで買い、複数条件達成で決済する短期テクニカル戦略。",
                 },
               ].map(s => (
-                <div key={s.tag} style={{ borderLeft: `3px solid ${s.tagColor}`, padding: "12px 16px", borderRadius: "0 8px 8px 0", background: s.tagBg }}>
-                  <div className="flex items-center gap-2 mb-1">
-                    <span style={{ fontSize: 11, fontWeight: 700, padding: "2px 8px", borderRadius: 4, background: s.tagColor, color: "#fff" }}>{s.tag}</span>
-                    <span style={{ fontSize: 13, fontWeight: 600, color: "#202124" }}>{s.title}</span>
+                <div key={s.tag} style={{ borderRadius: 10, overflow: "hidden", border: "1px solid #e8eaed" }}>
+                  <div className="flex items-center justify-between" style={{ padding: "12px 16px", borderBottom: "1px solid #e8eaed", background: s.tagBg }}>
+                    <div className="flex items-center gap-2">
+                      <span style={{ fontSize: 11, fontWeight: 700, padding: "2px 8px", borderRadius: 4, background: s.tagColor, color: "#fff" }}>{s.tag}</span>
+                      <span style={{ fontSize: 13, fontWeight: 600, color: "#202124" }}>{s.title}</span>
+                    </div>
+                    <span style={{ fontSize: 10, fontWeight: 600, padding: "2px 8px", borderRadius: 20, background: "#fff", color: s.tagColor, border: `1px solid ${s.tagColor}` }}>アクティブ</span>
                   </div>
-                  <p style={{ fontSize: 12, color: "#5f6368", margin: 0, lineHeight: 1.5 }}>{s.desc}</p>
+                  <div style={{ padding: "12px 16px" }}>
+                    <p style={{ fontSize: 11, color: "#9aa0a6", margin: "0 0 6px", fontStyle: "italic" }}>{s.sub}</p>
+                    <p style={{ fontSize: 12, color: "#5f6368", margin: 0, lineHeight: 1.6 }}>{s.desc}</p>
+                  </div>
                 </div>
               ))}
             </div>
-            <div style={{ margin: "0 20px 16px", fontSize: 11, color: "#9aa0a6", textAlign: "center" }}>
-              全戦略はAPIを通じて自動発注　|　損切・利確ルールを設定
+
+            {/* 共通リスク管理 */}
+            <div style={{ padding: "16px 20px", background: "#f8f9fa", borderRadius: 10, border: "1px solid #e8eaed" }}>
+              <div style={{ fontSize: 13, fontWeight: 700, color: "#202124", marginBottom: 12 }}>共通リスク管理</div>
+              <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+                {[
+                  { label: "エントリー", desc: "各戦略のシグナルスコア上位銘柄を翌営業日の寄付きで買い" },
+                  { label: "エグジット", desc: "保有営業日数の上限・損切り・利確のいずれか早い条件で決済" },
+                  { label: "ポジションサイジング", desc: "シグナルスコアに比例して各銘柄の投資比率を自動計算" },
+                  { label: "資金配分", desc: "3戦略間でリスク調整済みの配分比率を設定し、同一銘柄の重複保有を防止" },
+                  { label: "日次リスク制限", desc: "一定以上の日次損失が発生した場合、新規エントリーを自動停止" },
+                ].map(item => (
+                  <div key={item.label} className="flex gap-3" style={{ fontSize: 12 }}>
+                    <div style={{ width: 6, height: 6, borderRadius: "50%", background: "#1a73e8", marginTop: 5, flexShrink: 0 }} />
+                    <div>
+                      <span style={{ fontWeight: 600, color: "#202124" }}>{item.label}: </span>
+                      <span style={{ color: "#5f6368" }}>{item.desc}</span>
+                    </div>
+                  </div>
+                ))}
+              </div>
             </div>
+
           </div>
         </div>
 
-        {/* パフォーマンス推移 */}
-        <div className="rounded-xl overflow-hidden mb-5" style={{ background: "#fff", boxShadow: "0 4px 12px rgba(0,0,0,.08),0 2px 6px rgba(0,0,0,.05)" }}>
-          <div className="flex items-center justify-between" style={{ padding: "20px 28px 18px", borderBottom: "1px solid #e8eaed" }}>
-            <div className="flex items-center gap-2.5">
-              <div className="flex items-center justify-center rounded-md text-base" style={{ width: 32, height: 32, background: "#fef3e2" }}>📈</div>
-              <div>
-                <div style={{ fontSize: 15, fontWeight: 700, color: "#202124" }}>パフォーマンス推移</div>
-                <div style={{ fontSize: 12, color: "#9aa0a6", marginTop: 1 }}>
-                  基準資金 ¥{base.toLocaleString()} スタートで正規化（T-2データ）
-                </div>
-              </div>
-            </div>
-            <span style={{ fontSize: 11, fontWeight: 600, padding: "3px 10px", borderRadius: 20, background: "#f1f3f4", color: "#5f6368" }}>TOPIX 期間累計</span>
-          </div>
-          <div style={{ padding: "20px 28px" }}>
-            <div className="flex items-center gap-5 mb-4">
-              <div className="flex items-center gap-2" style={{ fontSize: 13, color: "#5f6368" }}>
-                <div style={{ width: 28, height: 3, borderRadius: 2, background: "#1a73e8" }} />
-                kabu-trader
-              </div>
-              <div className="flex items-center gap-2" style={{ fontSize: 13, color: "#5f6368" }}>
-                <div style={{ width: 28, height: 2, background: "repeating-linear-gradient(90deg,#9aa0a6 0,#9aa0a6 5px,transparent 5px,transparent 10px)" }} />
-                TOPIX
-              </div>
-            </div>
-            <PortfolioChart data={portfolio} displayMode="%" />
-          </div>
+        {/* 免責事項 */}
+        <div style={{ marginBottom: 20, padding: "14px 20px", background: "#fff", borderRadius: 10, border: "1px solid #e8eaed", fontSize: 12, color: "#9aa0a6", lineHeight: 1.7 }}>
+          <span style={{ fontWeight: 600, color: "#5f6368" }}>免責事項: </span>
+          本サイトは投資成績の公開を目的としており、投資助言を行うものではありません。掲載情報は参考目的のみであり、投資判断はご自身の責任において行ってください。過去の運用実績は将来の成果を保証するものではありません。
         </div>
 
         {/* 保有ポジション */}

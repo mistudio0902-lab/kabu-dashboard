@@ -3,9 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
-const NAV = [
-  { label: "戦略", href: "/strategy" },
-];
+const NAV: { label: string; href: string }[] = [];
 
 export default function Header() {
   const pathname = usePathname();
