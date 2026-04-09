@@ -225,6 +225,55 @@ export default function DashboardClient({ portfolio, trades, positions, baseCapi
           </div>
         </div>
 
+        {/* KPI カード行 */}
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(4,1fr)", gap: 14, marginBottom: 20 }}>
+          {[
+            {
+              label: "現在の評価総額",
+              value: stats ? `¥${stats.trueTotal.toLocaleString()}` : "¥1,000,000",
+              sub: stats ? (() => {
+                const diff = stats.trueTotal - base;
+                const pct = ((diff / base) * 100).toFixed(2);
+                return `${diff >= 0 ? "+" : ""}¥${diff.toLocaleString()} (${diff >= 0 ? "+" : ""}${pct}%)`;
+              })() : "—",
+              valueColor: "#202124",
+              subColor: (stats ? stats.trueTotal - base : 0) >= 0 ? "#34a853" : "#ea4335",
+              accent: "#1a73e8",
+            },
+            {
+              label: "売買損益（確定）",
+              value: `${realized >= 0 ? "" : "-"}¥${Math.abs(realized).toLocaleString()}`,
+              sub: realized !== 0 ? `${((realized / base) * 100).toFixed(2)}%` : "—",
+              valueColor: realized === 0 ? "#9aa0a6" : realized > 0 ? "#34a853" : "#ea4335",
+              subColor: realized === 0 ? "#9aa0a6" : realized > 0 ? "#34a853" : "#ea4335",
+              accent: "#1a73e8",
+            },
+            {
+              label: "含み損益",
+              value: `${unrealized >= 0 ? "+" : ""}¥${unrealized.toLocaleString()}`,
+              sub: unrealized !== 0 ? `${((unrealized / base) * 100).toFixed(2)}%` : "—",
+              valueColor: unrealized === 0 ? "#9aa0a6" : unrealized > 0 ? "#34a853" : "#ea4335",
+              subColor: unrealized === 0 ? "#9aa0a6" : unrealized > 0 ? "#34a853" : "#ea4335",
+              accent: "#34a853",
+            },
+            {
+              label: "運用期間",
+              value: stats ? `${stats.opDays}日` : "—",
+              sub: stats ? `${stats.startDate} 〜 ${stats.endDate}` : "—",
+              valueColor: "#5f6368",
+              subColor: "#9aa0a6",
+              accent: "#fbbc04",
+            },
+          ].map(card => (
+            <div key={card.label} className="rounded-xl relative" style={{ background: "#fff", border: "1px solid #e8eaed", padding: "16px 20px 20px", boxShadow: "0 1px 3px rgba(0,0,0,.06)" }}>
+              <div style={{ position: "absolute", bottom: 0, left: 16, right: 16, height: 3, borderRadius: "0 0 4px 4px", background: card.accent }} />
+              <div style={{ fontSize: 11, fontWeight: 500, color: "#9aa0a6", textTransform: "uppercase", letterSpacing: ".8px", marginBottom: 8 }}>{card.label}</div>
+              <div style={{ fontFamily: "monospace", fontSize: 22, fontWeight: 700, color: card.valueColor, lineHeight: 1, marginBottom: 6 }}>{card.value}</div>
+              <div style={{ fontSize: 12, fontWeight: 500, color: card.subColor }}>{card.sub}</div>
+            </div>
+          ))}
+        </div>
+
         {/* 保有ポジション */}
         <div className="mb-3">
           <CollapsibleSection title="保有ポジション" count={positions.length}>
