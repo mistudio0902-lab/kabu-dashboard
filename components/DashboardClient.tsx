@@ -9,6 +9,7 @@ import type { PortfolioDaily, Trade } from "@/lib/supabase";
 type Props = {
   portfolio: PortfolioDaily[];
   trades: Trade[];
+  baseCapital?: number;
 };
 
 function calcStats(data: PortfolioDaily[]) {
