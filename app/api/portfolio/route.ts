@@ -10,7 +10,7 @@ export async function GET() {
   );
 
   const { data, error } = await supabase
-    .from("portfolio_cumulative")
+    .from("portfolio_daily")
     .select("*")
     .order("date", { ascending: true });
 

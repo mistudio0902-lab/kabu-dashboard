@@ -43,7 +43,7 @@ async function getData() {
 
   const [portfolioRes, tradesRes, positionsRes] = await Promise.all([
     supabase
-      .from("portfolio_cumulative")
+      .from("portfolio_daily")
       .select("*")
       .order("date", { ascending: true })
       .gte("date", PORTFOLIO_START_DATE)
