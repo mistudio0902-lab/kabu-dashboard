@@ -62,7 +62,8 @@ async function getData() {
     supabaseAdmin
       .from("positions")
       .select("*")
-      .order("updated_at", { ascending: false }),
+      .eq("date", cutoff)
+      .order("ticker", { ascending: true }),
   ]);
 
   const rawPortfolio = (portfolioRes.data ?? []) as PortfolioDaily[];
