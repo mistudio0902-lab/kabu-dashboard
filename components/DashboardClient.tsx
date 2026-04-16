@@ -19,8 +19,9 @@ function calcStats(data: PortfolioDaily[], base: number) {
   const first = data[0];
   const latest = data[data.length - 1];
   const unrealizedPnl = latest.unrealized_pnl ?? 0;
-  const trueTotal = latest.total_capital + unrealizedPnl;
-  const realizedPnl = latest.total_capital - base;
+  // total_capital = 買付余力 + 保有株時価（含み込み済み）なので unrealized_pnl を足さない
+  const trueTotal = latest.total_capital;
+  const realizedPnl = latest.total_capital - unrealizedPnl - base;
   const totalReturn = base > 0 ? (trueTotal - base) / base : 0;
 
   const startMs = new Date(first.date).getTime();
