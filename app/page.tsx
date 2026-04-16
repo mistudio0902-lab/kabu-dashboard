@@ -34,7 +34,11 @@ async function getData() {
     };
   }
 
+  // anon クライアント（RLS 適用）
   const supabase = createClient(url, key);
+  // service_role クライアント（RLS バイパス — positions/trades 取得用）
+  const serviceKey = process.env.SUPABASE_SERVICE_KEY ?? key;
+  const supabaseAdmin = createClient(url, serviceKey);
 
   // T-2 営業日のカットオフ日付（JST基準: UTC+9）
   const nowJst = new Date(Date.now() + 9 * 60 * 60 * 1000);
@@ -48,13 +52,14 @@ async function getData() {
       .order("date", { ascending: true })
       .gte("date", PORTFOLIO_START_DATE)
       .lte("date", cutoff),
-    supabase
+    supabaseAdmin
       .from("trades")
       .select("*")
       .eq("order_result", "success")
+      .lte("date", cutoff)
       .order("timestamp", { ascending: false })
       .limit(200),
-    supabase
+    supabaseAdmin
       .from("positions")
       .select("*")
       .order("updated_at", { ascending: false }),
