@@ -7,6 +7,22 @@ import type { PortfolioDaily, Trade, Position } from "@/lib/supabase";
 
 const BASE_CAPITAL = 1_000_000;
 
+const COMPANY_NAMES: Record<string, string> = {
+  "1719": "安藤・間",
+  "1621": "三井住友建設",
+  "1625": "熊谷組",
+  "2341": "アルバイトタイムス",
+  "2659": "サンエー",
+  "3608": "TSIホールディングス",
+  "3994": "マネーフォワード",
+  "4825": "ウェザーニューズ",
+  "6810": "マクセル",
+  "8051": "山善",
+  "9432": "NTT",
+  "9519": "再生可能エナジー",
+  "9842": "アークランズ",
+};
+
 type Props = {
   portfolio: PortfolioDaily[];
   trades: Trade[];
@@ -297,11 +313,15 @@ export default function DashboardClient({ portfolio, trades, positions, baseCapi
                   <tbody>
                     {positions.map((p, i) => {
                       const ticker = p.ticker.replace(".T", "");
+                      const companyName = COMPANY_NAMES[ticker] ?? "";
                       const totalCost = p.entry_price * p.quantity;
                       const pnl = p.unrealized_pnl ?? 0;
                       return (
                         <tr key={i} style={{ borderBottom: "1px solid #e8eaed" }} onMouseEnter={e => (e.currentTarget.style.background = "#f8fafe")} onMouseLeave={e => (e.currentTarget.style.background = "transparent")}>
-                          <td style={{ padding: "14px 20px", fontFamily: "monospace", fontSize: 14, fontWeight: 700, color: "#1a73e8" }}>{ticker}</td>
+                          <td style={{ padding: "14px 20px" }}>
+                            <div style={{ fontFamily: "monospace", fontSize: 14, fontWeight: 700, color: "#1a73e8" }}>{ticker}</div>
+                            {companyName && <div style={{ fontSize: 11, color: "#9aa0a6", marginTop: 2 }}>{companyName}</div>}
+                          </td>
                           <td style={{ padding: "14px 20px", fontFamily: "monospace", fontSize: 13, color: "#5f6368" }}>{p.quantity.toLocaleString()}株</td>
                           <td style={{ padding: "14px 20px", fontFamily: "monospace", fontSize: 13, color: "#5f6368" }}>¥{Math.round(p.entry_price).toLocaleString()}</td>
                           <td style={{ padding: "14px 20px", fontFamily: "monospace", fontSize: 13, color: "#5f6368" }}>¥{Math.round(totalCost).toLocaleString()}</td>
@@ -349,10 +369,14 @@ export default function DashboardClient({ portfolio, trades, positions, baseCapi
                   <tbody>
                     {trades.map((t, i) => {
                       const ticker = t.ticker.replace(".T", "");
+                      const companyName = COMPANY_NAMES[ticker] ?? "";
                       return (
                         <tr key={i} style={{ borderBottom: "1px solid #e8eaed" }} onMouseEnter={e => (e.currentTarget.style.background = "#f8fafe")} onMouseLeave={e => (e.currentTarget.style.background = "transparent")}>
                           <td style={{ padding: "14px 20px", fontFamily: "monospace", fontSize: 12, color: "#5f6368" }}>{t.date}</td>
-                          <td style={{ padding: "14px 20px", fontFamily: "monospace", fontSize: 14, fontWeight: 700, color: "#1a73e8" }}>{ticker}</td>
+                          <td style={{ padding: "14px 20px" }}>
+                            <div style={{ fontFamily: "monospace", fontSize: 14, fontWeight: 700, color: "#1a73e8" }}>{ticker}</div>
+                            {companyName && <div style={{ fontSize: 11, color: "#9aa0a6", marginTop: 2 }}>{companyName}</div>}
+                          </td>
                           <td style={{ padding: "14px 20px" }}>
                             <span style={{ display: "inline-block", padding: "2px 8px", borderRadius: 4, fontSize: 11, fontWeight: 700, fontFamily: "monospace", background: t.side === "BUY" ? "#e8f0fe" : "#fce8e6", color: t.side === "BUY" ? "#1a73e8" : "#ea4335" }}>
                               {t.side === "BUY" ? "買" : "売"}
