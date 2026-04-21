@@ -30,14 +30,55 @@ type Props = {
   baseCapital?: number;
 };
 
-function calcStats(data: PortfolioDaily[], base: number) {
+function calcFifoPnl(trades: Trade[]): number {
+  const sorted = [...trades].sort((a, b) => new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime());
+  const buyQueues: Record<string, { price: number; qty: number }[]> = {};
+  let total = 0;
+  for (const t of sorted) {
+    if (t.side === "BUY") {
+      if (!buyQueues[t.ticker]) buyQueues[t.ticker] = [];
+      buyQueues[t.ticker].push({ price: t.price, qty: t.quantity });
+    } else {
+      const queue = buyQueues[t.ticker] ?? [];
+      let remaining = t.quantity, cost = 0, matched = 0;
+      while (remaining > 0 && queue.length > 0) {
+        const buy = queue[0];
+        const used = Math.min(buy.qty, remaining);
+        cost += buy.price * used; matched += used; remaining -= used; buy.qty -= used;
+        if (buy.qty === 0) queue.shift();
+      }
+      if (matched > 0) total += Math.round((t.price - cost / matched) * matched);
+    }
+  }
+  return total;
+}
+
+function calcStats(data: PortfolioDaily[], base: number, trades: Trade[], positions: Position[]) {
   if (!data.length) return null;
   const first = data[0];
   const latest = data[data.length - 1];
-  const unrealizedPnl = latest.unrealized_pnl ?? 0;
-  // total_capital = 買付余力 + 保有株時価（含み込み済み）なので unrealized_pnl を足さない
   const trueTotal = latest.total_capital;
-  const realizedPnl = latest.total_capital - unrealizedPnl - base;
+
+  // 確定損益: tradesのFIFO合計
+  const realizedPnl = calcFifoPnl(trades);
+
+  // 含み損益: positionsの合計（SELL済みは除外済みの前提）
+  const soldTickers = new Set(trades.filter(t => t.side === "SELL").map(t => t.ticker));
+  const latestPositions = Object.values(
+    positions.reduce((acc, p) => {
+      const key = p.ticker;
+      if (!acc[key] || new Date(p.updated_at) > new Date(acc[key].updated_at)) acc[key] = p;
+      return acc;
+    }, {} as Record<string, Position>)
+  ).filter(p => !soldTickers.has(p.ticker));
+
+  const unrealizedPnl = latestPositions.reduce((sum, p) => {
+    const pnl = p.unrealized_pnl !== null && p.unrealized_pnl !== undefined
+      ? p.unrealized_pnl
+      : p.current_price != null ? (p.current_price - p.entry_price) * p.quantity : 0;
+    return sum + pnl;
+  }, 0);
+
   const totalReturn = base > 0 ? (trueTotal - base) / base : 0;
 
   const startMs = new Date(first.date).getTime();
@@ -98,7 +139,7 @@ function CollapsibleSection({
 
 export default function DashboardClient({ portfolio, trades, positions, baseCapital }: Props) {
   const base = baseCapital ?? BASE_CAPITAL;
-  const stats = calcStats(portfolio, base);
+  const stats = calcStats(portfolio, base, trades, positions);
   const [chartMode, setChartMode] = useState<"%" | "$">("%");
 
   const unrealized = stats?.unrealizedPnl ?? 0;
@@ -293,7 +334,15 @@ export default function DashboardClient({ portfolio, trades, positions, baseCapi
 
         {/* 保有ポジション */}
         <div className="mb-3">
-          <CollapsibleSection title="保有ポジション" count={positions.length}>
+          <CollapsibleSection title="保有ポジション" count={(() => {
+            const soldTickers = new Set(trades.filter(t => t.side === "SELL").map(t => t.ticker));
+            return Object.keys(
+              positions.reduce((acc, p) => {
+                if (!acc[p.ticker] || new Date(p.updated_at) > new Date(acc[p.ticker].updated_at)) acc[p.ticker] = p;
+                return acc;
+              }, {} as Record<string, Position>)
+            ).filter(k => !soldTickers.has(k)).length;
+          })()}>
             {positions.length === 0 ? (
               <div style={{ padding: "32px 0", textAlign: "center", fontSize: 13, color: "#9aa0a6" }}>
                 保有銘柄なし（2日遅延公開）
@@ -311,11 +360,26 @@ export default function DashboardClient({ portfolio, trades, positions, baseCapi
                     </tr>
                   </thead>
                   <tbody>
-                    {positions.map((p, i) => {
+                    {/* tickerごとに最新行のみ、かつSELL済みを除外 */}
+                    {(() => {
+                      const soldTickers = new Set(trades.filter(t => t.side === "SELL").map(t => t.ticker));
+                      return Object.values(
+                        positions.reduce((acc, p) => {
+                          const key = p.ticker;
+                          if (!acc[key] || new Date(p.updated_at) > new Date(acc[key].updated_at)) acc[key] = p;
+                          return acc;
+                        }, {} as Record<string, Position>)
+                      ).filter(p => !soldTickers.has(p.ticker));
+                    })().map((p, i) => {
                       const ticker = p.ticker.replace(".T", "");
                       const companyName = COMPANY_NAMES[ticker] ?? "";
                       const totalCost = p.entry_price * p.quantity;
-                      const pnl = p.unrealized_pnl ?? 0;
+                      // unrealized_pnl がnullの場合はcurrent_priceから計算、それもなければentry_priceベース
+                      const pnl = p.unrealized_pnl !== null && p.unrealized_pnl !== undefined
+                        ? p.unrealized_pnl
+                        : p.current_price != null
+                          ? (p.current_price - p.entry_price) * p.quantity
+                          : 0;
                       return (
                         <tr key={i} style={{ borderBottom: "1px solid #e8eaed" }} onMouseEnter={e => (e.currentTarget.style.background = "#f8fafe")} onMouseLeave={e => (e.currentTarget.style.background = "transparent")}>
                           <td style={{ padding: "14px 20px" }}>
@@ -354,50 +418,70 @@ export default function DashboardClient({ portfolio, trades, positions, baseCapi
               <div style={{ padding: "32px 0", textAlign: "center", fontSize: 13, color: "#9aa0a6" }}>
                 取引データなし（2日遅延公開）
               </div>
-            ) : (
-              <div className="overflow-x-auto">
-                <table style={{ width: "100%", borderCollapse: "collapse" }}>
-                  <thead>
-                    <tr style={{ background: "#f8f9fa" }}>
-                      {["日付", "銘柄", "売買", "株数", "単価", "約定金額"].map(h => (
-                        <th key={h} style={{ padding: "10px 20px", textAlign: "left", fontSize: 11, fontWeight: 600, color: "#9aa0a6", textTransform: "uppercase", letterSpacing: ".8px", borderBottom: "1px solid #e8eaed" }}>
-                          {h}
-                        </th>
-                      ))}
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {trades.map((t, i) => {
-                      const ticker = t.ticker.replace(".T", "");
-                      const companyName = COMPANY_NAMES[ticker] ?? "";
-                      return (
-                        <tr key={i} style={{ borderBottom: "1px solid #e8eaed" }} onMouseEnter={e => (e.currentTarget.style.background = "#f8fafe")} onMouseLeave={e => (e.currentTarget.style.background = "transparent")}>
-                          <td style={{ padding: "14px 20px", fontFamily: "monospace", fontSize: 12, color: "#5f6368" }}>{t.date}</td>
-                          <td style={{ padding: "14px 20px" }}>
-                            <div style={{ fontFamily: "monospace", fontSize: 14, fontWeight: 700, color: "#1a73e8" }}>{ticker}</div>
-                            {companyName && <div style={{ fontSize: 11, color: "#9aa0a6", marginTop: 2 }}>{companyName}</div>}
-                          </td>
-                          <td style={{ padding: "14px 20px" }}>
-                            <span style={{ display: "inline-block", padding: "2px 8px", borderRadius: 4, fontSize: 11, fontWeight: 700, fontFamily: "monospace", background: t.side === "BUY" ? "#e8f0fe" : "#fce8e6", color: t.side === "BUY" ? "#1a73e8" : "#ea4335" }}>
-                              {t.side === "BUY" ? "買" : "売"}
-                            </span>
-                          </td>
-                          <td style={{ padding: "14px 20px", fontFamily: "monospace", fontSize: 13, color: "#5f6368" }}>
-                            {t.quantity?.toLocaleString() ?? "—"}株
-                          </td>
-                          <td style={{ padding: "14px 20px", fontFamily: "monospace", fontSize: 13, color: "#5f6368" }}>
-                            {t.price != null ? `¥${t.price.toLocaleString()}` : "—"}
-                          </td>
-                          <td style={{ padding: "14px 20px", fontFamily: "monospace", fontSize: 13, color: "#5f6368" }}>
-                            {t.notional != null ? `¥${t.notional.toLocaleString()}` : "—"}
-                          </td>
-                        </tr>
-                      );
-                    })}
-                  </tbody>
-                </table>
-              </div>
-            )}
+            ) : (() => {
+              // BUY/SELLをFIFOマッチングして実現損益を計算
+              const sorted = [...trades].sort((a, b) => new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime());
+              const buyQueues: Record<string, { id: number; price: number; qty: number }[]> = {};
+              const pnlMap: Record<number, number> = {};
+              for (const t of sorted) {
+                if (t.side === "BUY") {
+                  if (!buyQueues[t.ticker]) buyQueues[t.ticker] = [];
+                  buyQueues[t.ticker].push({ id: t.id, price: t.price, qty: t.quantity });
+                } else {
+                  const queue = buyQueues[t.ticker] ?? [];
+                  let remaining = t.quantity, totalCost = 0, matched = 0;
+                  while (remaining > 0 && queue.length > 0) {
+                    const buy = queue[0];
+                    const used = Math.min(buy.qty, remaining);
+                    totalCost += buy.price * used; matched += used; remaining -= used; buy.qty -= used;
+                    if (buy.qty === 0) queue.shift();
+                  }
+                  if (matched > 0) pnlMap[t.id] = Math.round((t.price - totalCost / matched) * matched);
+                }
+              }
+              return (
+                <div className="overflow-x-auto">
+                  <table style={{ width: "100%", borderCollapse: "collapse" }}>
+                    <thead>
+                      <tr style={{ background: "#f8f9fa" }}>
+                        {["日付", "銘柄", "売買", "株数", "単価", "約定金額", "損益"].map(h => (
+                          <th key={h} style={{ padding: "10px 20px", textAlign: h === "損益" || h === "株数" || h === "単価" || h === "約定金額" ? "right" : "left", fontSize: 11, fontWeight: 600, color: "#9aa0a6", textTransform: "uppercase", letterSpacing: ".8px", borderBottom: "1px solid #e8eaed" }}>
+                            {h}
+                          </th>
+                        ))}
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {trades.map((t, i) => {
+                        const ticker = t.ticker.replace(".T", "");
+                        const companyName = COMPANY_NAMES[ticker] ?? "";
+                        const pnl = pnlMap[t.id];
+                        return (
+                          <tr key={i} style={{ borderBottom: "1px solid #e8eaed" }} onMouseEnter={e => (e.currentTarget.style.background = "#f8fafe")} onMouseLeave={e => (e.currentTarget.style.background = "transparent")}>
+                            <td style={{ padding: "14px 20px", fontFamily: "monospace", fontSize: 12, color: "#5f6368" }}>{t.date}</td>
+                            <td style={{ padding: "14px 20px" }}>
+                              <div style={{ fontFamily: "monospace", fontSize: 14, fontWeight: 700, color: "#1a73e8" }}>{ticker}</div>
+                              {companyName && <div style={{ fontSize: 11, color: "#9aa0a6", marginTop: 2 }}>{companyName}</div>}
+                            </td>
+                            <td style={{ padding: "14px 20px" }}>
+                              <span style={{ display: "inline-block", padding: "2px 8px", borderRadius: 4, fontSize: 11, fontWeight: 700, fontFamily: "monospace", background: t.side === "BUY" ? "#e8f0fe" : "#fce8e6", color: t.side === "BUY" ? "#1a73e8" : "#ea4335" }}>
+                                {t.side === "BUY" ? "買" : "売"}
+                              </span>
+                            </td>
+                            <td style={{ padding: "14px 20px", fontFamily: "monospace", fontSize: 13, color: "#5f6368", textAlign: "right" }}>{t.quantity?.toLocaleString() ?? "—"}株</td>
+                            <td style={{ padding: "14px 20px", fontFamily: "monospace", fontSize: 13, color: "#5f6368", textAlign: "right" }}>{t.price != null ? `¥${t.price.toLocaleString()}` : "—"}</td>
+                            <td style={{ padding: "14px 20px", fontFamily: "monospace", fontSize: 13, color: "#5f6368", textAlign: "right" }}>{t.notional != null ? `¥${t.notional.toLocaleString()}` : "—"}</td>
+                            <td style={{ padding: "14px 20px", fontFamily: "monospace", fontSize: 13, fontWeight: 600, textAlign: "right", color: pnl == null ? "#ccc" : pnl >= 0 ? "#34a853" : "#ea4335" }}>
+                              {pnl != null ? `${pnl >= 0 ? "+" : ""}¥${pnl.toLocaleString()}` : "—"}
+                            </td>
+                          </tr>
+                        );
+                      })}
+                    </tbody>
+                  </table>
+                </div>
+              );
+            })()}
           </CollapsibleSection>
         </div>
 

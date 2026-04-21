@@ -22,6 +22,34 @@ function bizDaysBack(from: Date, n: number): Date {
   return d;
 }
 
+async function fetchTopix(startDate: string, endDate: string): Promise<Record<string, number>> {
+  try {
+    const p1 = Math.floor(new Date(startDate + "T00:00:00Z").getTime() / 1000);
+    const p2 = Math.floor(new Date(endDate + "T23:59:59Z").getTime() / 1000);
+    const res = await fetch(
+      `https://query1.finance.yahoo.com/v8/finance/chart/1306.T?interval=1d&period1=${p1}&period2=${p2}`,
+      {
+        headers: { "User-Agent": "Mozilla/5.0" },
+        next: { revalidate: 3600 },
+      }
+    );
+    if (!res.ok) return {};
+    const json = await res.json();
+    const result = json?.chart?.result?.[0];
+    if (!result) return {};
+    const timestamps: number[] = result.timestamp ?? [];
+    const closes: number[] = result.indicators?.quote?.[0]?.close ?? [];
+    const out: Record<string, number> = {};
+    timestamps.forEach((ts, i) => {
+      const date = new Date(ts * 1000).toISOString().split("T")[0];
+      if (closes[i] != null) out[date] = closes[i];
+    });
+    return out;
+  } catch {
+    return {};
+  }
+}
+
 async function getData() {
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
   const key = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
@@ -45,7 +73,7 @@ async function getData() {
   const cutoffDate = bizDaysBack(nowJst, 2);
   const cutoff = cutoffDate.toISOString().split("T")[0]; // YYYY-MM-DD
 
-  const [portfolioRes, tradesRes, positionsRes] = await Promise.all([
+  const [portfolioRes, tradesRes, positionsRes, topixPrices] = await Promise.all([
     supabase
       .from("portfolio_daily")
       .select("*")
@@ -62,17 +90,30 @@ async function getData() {
     supabaseAdmin
       .from("positions")
       .select("*")
-      .eq("date", cutoff)
-      .order("ticker", { ascending: true }),
+      .order("updated_at", { ascending: false })
+      .limit(200),
+    fetchTopix(PORTFOLIO_START_DATE, cutoff),
   ]);
 
   const rawPortfolio = (portfolioRes.data ?? []) as PortfolioDaily[];
 
-  // 累積リターンをBASE_CAPITAL基準で再計算
-  const portfolio = rawPortfolio.map((d) => ({
-    ...d,
-    cumulative_return: (d.total_capital - BASE_CAPITAL) / BASE_CAPITAL,
-  }));
+  // TOPIX基準リターン計算（最初の取引日のTOPIX終値を100%とする）
+  const topixDates = Object.keys(topixPrices).sort();
+  const topixBase = topixDates.length > 0 ? topixPrices[topixDates[0]] : null;
+
+  // 累積リターンをBASE_CAPITAL基準で再計算、TOPIX累積リターンも付与
+  const portfolio = rawPortfolio.map((d) => {
+    // 当日または直近のTOPIX値を前方補完で取得
+    const close = topixPrices[d.date] ?? (() => {
+      const prev = topixDates.filter(dt => dt <= d.date).at(-1);
+      return prev ? topixPrices[prev] : null;
+    })();
+    return {
+      ...d,
+      cumulative_return: (d.total_capital - BASE_CAPITAL) / BASE_CAPITAL,
+      topix_return: topixBase && close ? (close - topixBase) / topixBase : null,
+    };
+  });
 
   return {
     portfolio,
