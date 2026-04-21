@@ -48,7 +48,7 @@ const CustomTooltip = ({
       style={{ fontSize: 12 }}
     >
       <p className="text-gray-500 mb-1 font-medium">{label}</p>
-      {payload.map((p, i) => (
+      {payload.filter(p => p.name === "kabu-trader" || p.name === "TOPIX").map((p, i) => (
         <p key={i} style={{ color: p.color }} className="font-semibold">
           {p.name}:{" "}
           {isYen
@@ -68,7 +68,8 @@ export default function PortfolioChart({ data, displayMode, height = 340 }: Prop
     label: formatDate(d.date),
     capital: d.total_capital,
     cumReturn: +(d.cumulative_return! * 100).toFixed(2),
-    topix: 0, // ベンチマーク（フラット）
+    topix: d.topix_return != null ? +(d.topix_return * 100).toFixed(2) : null,
+    topixYen: d.topix_return != null ? Math.round(1_000_000 * (1 + d.topix_return)) : null,
   }));
 
   // Extend benchmark flat line across full range if data exists
@@ -134,7 +135,7 @@ export default function PortfolioChart({ data, displayMode, height = 340 }: Prop
         {/* TOPIX ベンチマーク（破線グレー） */}
         <Line
           type="monotone"
-          dataKey="topix"
+          dataKey={isYen ? "topixYen" : "topix"}
           stroke="#9ca3af"
           strokeWidth={1.5}
           strokeDasharray="5 4"
