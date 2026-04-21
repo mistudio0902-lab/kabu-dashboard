@@ -75,28 +75,6 @@ export default function PortfolioChart({ data, displayMode, height = 340 }: Prop
   // Extend benchmark flat line across full range if data exists
   const startCapital = data.length > 0 ? data[0].total_capital : 0;
 
-  // Dynamic Y-axis domain so TOPIX vs portfolio diff is visible
-  const yDomain: [number | string, number | string] = (() => {
-    if (chartData.length === 0) return ["auto", "auto"];
-    if (isYen) {
-      const vals = chartData.flatMap((d) =>
-        [d.capital, d.topixYen].filter((v): v is number => v != null)
-      );
-      const min = Math.min(...vals);
-      const max = Math.max(...vals);
-      const pad = (max - min) * 0.05 || max * 0.01;
-      return [Math.floor(min - pad), Math.ceil(max + pad)];
-    } else {
-      const vals = chartData.flatMap((d) =>
-        [d.cumReturn, d.topix].filter((v): v is number => v != null)
-      );
-      const min = Math.min(...vals);
-      const max = Math.max(...vals);
-      const pad = (max - min) * 0.05 || 0.5;
-      return [+((min - pad).toFixed(2)), +((max + pad).toFixed(2))];
-    }
-  })();
-
   return (
     <ResponsiveContainer width="100%" height={height}>
       <ComposedChart
@@ -134,7 +112,7 @@ export default function PortfolioChart({ data, displayMode, height = 340 }: Prop
           tickLine={false}
           axisLine={false}
           width={56}
-          domain={yDomain}
+          domain={["auto", "auto"]}
         />
 
         <Tooltip
