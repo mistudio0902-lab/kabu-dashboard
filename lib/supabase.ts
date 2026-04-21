@@ -13,6 +13,7 @@ export type PortfolioDaily = {
   n_trades: number;
   drawdown: number;
   cumulative_return?: number;
+  topix_return?: number | null;
   cash_ratio?: number | null;
   holdings_count?: number | null;
   unrealized_pnl?: number | null;
