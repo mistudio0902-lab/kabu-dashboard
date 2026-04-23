@@ -2,7 +2,7 @@ import { createClient } from "@supabase/supabase-js";
 import DashboardClient from "@/components/DashboardClient";
 import type { PortfolioDaily, Trade, Position } from "@/lib/supabase";
 
-export const revalidate = 3600;
+export const dynamic = 'force-dynamic';
 
 // 運用開始時の基準資金
 export const BASE_CAPITAL = 1_000_000;
