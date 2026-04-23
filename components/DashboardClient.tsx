@@ -187,7 +187,7 @@ export default function DashboardClient({ portfolio, trades, positions, baseCapi
                 <div>
                   <div style={{ fontSize: 15, fontWeight: 700, color: "#202124" }}>パフォーマンス推移</div>
                   <div style={{ fontSize: 12, color: "#9aa0a6", marginTop: 1 }}>
-                    基準資金 ¥{base.toLocaleString()} スタートで正規化（T-2データ）
+                    基準資金 ¥{base.toLocaleString()} スタートで正規化
                   </div>
                 </div>
               </div>
@@ -250,7 +250,7 @@ export default function DashboardClient({ portfolio, trades, positions, baseCapi
             <div style={{ padding: "20px 28px", display: "flex", flexDirection: "column", gap: 0 }}>
               {[
                 { label: "基準資金（開始時）", value: `¥${base.toLocaleString()}`, color: "#202124" },
-                { label: "現在の評価総額（T-2）", value: stats ? `¥${stats.trueTotal.toLocaleString()}` : "—", color: "#202124" },
+                { label: "現在の評価総額", value: stats ? `¥${stats.trueTotal.toLocaleString()}` : "—", color: "#202124" },
                 {
                   label: "確定損益（売買益のみ）",
                   value: `${realized >= 0 ? "" : "-"}¥${Math.abs(realized).toLocaleString()}`,
@@ -278,7 +278,7 @@ export default function DashboardClient({ portfolio, trades, positions, baseCapi
             </div>
             <div style={{ margin: "0 28px 20px", padding: "10px 14px", background: "#fffde7", border: "1px solid #fff176", borderLeft: "3px solid #fbbc04", borderRadius: 6, fontSize: 12, color: "#5d4037", display: "flex", alignItems: "flex-start", gap: 6 }}>
               <span>ℹ</span>
-              <span>毎日18:00に前々営業日（T-2）のデータで自動更新</span>
+              <span>毎日18:00に当日データで自動更新</span>
             </div>
           </div>
         </div>
@@ -345,7 +345,7 @@ export default function DashboardClient({ portfolio, trades, positions, baseCapi
           })()}>
             {positions.length === 0 ? (
               <div style={{ padding: "32px 0", textAlign: "center", fontSize: 13, color: "#9aa0a6" }}>
-                保有銘柄なし（2日遅延公開）
+                保有銘柄なし
               </div>
             ) : (
               <div className="overflow-x-auto">
@@ -416,7 +416,7 @@ export default function DashboardClient({ portfolio, trades, positions, baseCapi
           <CollapsibleSection title="取引履歴" count={trades.length}>
             {trades.length === 0 ? (
               <div style={{ padding: "32px 0", textAlign: "center", fontSize: 13, color: "#9aa0a6" }}>
-                取引データなし（2日遅延公開）
+                取引データなし
               </div>
             ) : (() => {
               // BUY/SELLをFIFOマッチングして実現損益を計算
@@ -519,7 +519,7 @@ export default function DashboardClient({ portfolio, trades, positions, baseCapi
               <p style={{ fontSize: 13, color: "#5f6368", margin: 0, lineHeight: 1.7 }}>
                 「AIが本当に株式市場で通用するのか」という問いに、実資金で答えを出すプロジェクトです。
                 バックテストやシミュレーションではなく、リアルマネーでの実績をすべて公開します。
-                銘柄名は<strong style={{ color: "#202124" }}>2日遅延</strong>で公開（インサイダー取引防止）。
+                銘柄名は<strong style={{ color: "#202124" }}>当日18:00</strong>に公開（引け後）。
               </p>
             </div>
 
