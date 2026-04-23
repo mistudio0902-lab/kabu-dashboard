@@ -8,7 +8,7 @@ export const dynamic = 'force-dynamic';
 export const BASE_CAPITAL = 1_000_000;
 
 // ポートフォリオ表示開始日（¥1M入金日）
-export const PORTFOLIO_START_DATE = "2026-04-08";
+export const PORTFOLIO_START_DATE = "2026-04-06";
 
 // T-N 営業日前の日付を計算（土日スキップ）
 function bizDaysBack(from: Date, n: number): Date {
