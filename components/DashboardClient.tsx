@@ -497,7 +497,7 @@ export default function DashboardClient({ portfolio, trades, positions, baseCapi
                 </div>
                 <div>
                   <div style={{ fontSize: 15, fontWeight: 700, color: "#202124" }}>採用戦略 &amp; 概要</div>
-                  <div style={{ fontSize: 12, color: "#9aa0a6", marginTop: 1 }}>3戦略を並列運用 / シグナル自動スクリーニング</div>
+                  <div style={{ fontSize: 12, color: "#9aa0a6", marginTop: 1 }}>2戦略を並列運用 / シグナル自動スクリーニング</div>
                 </div>
               </div>
               <a
@@ -537,12 +537,6 @@ export default function DashboardClient({ portfolio, trades, positions, baseCapi
                   tagColor: "#34a853", tagBg: "#e6f4ea",
                   title: "売買代金急増戦略",
                   desc: "前日の売買代金が過去平均から急増した銘柄を検知し、翌営業日の寄付きで買い。機関投資家の参入やトレンド発生初期に伴う需給変化を捉える短期戦略。",
-                },
-                {
-                  tag: "Momentum", sub: "Multi-Factor Technical",
-                  tagColor: "#ea4335", tagBg: "#fce8e6",
-                  title: "テクニカルモメンタム戦略",
-                  desc: "出来高急増・板情報需給・価格モメンタムの質・移動平均位置の4要素を合成してスコア化。上位銘柄を翌営業日の寄付きで買い、複数条件達成で決済する短期テクニカル戦略。",
                 },
               ].map(s => (
                 <div key={s.tag} style={{ borderRadius: 10, overflow: "hidden", border: "1px solid #e8eaed" }}>
