@@ -59,9 +59,6 @@ function calcStats(data: PortfolioDaily[], base: number, trades: Trade[], positi
   const latest = data[data.length - 1];
   const trueTotal = latest.total_capital;
 
-  // 確定損益: tradesのFIFO合計
-  const realizedPnl = calcFifoPnl(trades);
-
   // 含み損益: positionsの合計（SELL済みは除外済みの前提）
   const soldTickers = new Set(trades.filter(t => t.side === "SELL").map(t => t.ticker));
   const latestPositions = Object.values(
@@ -78,6 +75,9 @@ function calcStats(data: PortfolioDaily[], base: number, trades: Trade[], positi
       : p.current_price != null ? (p.current_price - p.entry_price) * p.quantity : 0;
     return sum + pnl;
   }, 0);
+
+  // 確定損益: total_capitalベースで逆算（trades FIFO再計算との乖離を防ぐ）
+  const realizedPnl = trueTotal - base - unrealizedPnl;
 
   const totalReturn = base > 0 ? (trueTotal - base) / base : 0;
 
