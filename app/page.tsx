@@ -68,9 +68,11 @@ async function getData() {
   const serviceKey = process.env.SUPABASE_SERVICE_KEY ?? key;
   const supabaseAdmin = createClient(url, serviceKey);
 
-  // 当日カットオフ（JST基準: UTC+9）
+  // 18:00 JST以降は当日、それ以前は前営業日まで表示
   const nowJst = new Date(Date.now() + 9 * 60 * 60 * 1000);
-  const cutoff = nowJst.toISOString().split("T")[0]; // YYYY-MM-DD
+  const hourJst = nowJst.getUTCHours(); // UTC hours = JST hours (already offset)
+  const cutoffDate = hourJst >= 18 ? nowJst : bizDaysBack(nowJst, 1);
+  const cutoff = cutoffDate.toISOString().split("T")[0]; // YYYY-MM-DD
 
   const [portfolioRes, tradesRes, positionsRes, topixPrices] = await Promise.all([
     supabase
