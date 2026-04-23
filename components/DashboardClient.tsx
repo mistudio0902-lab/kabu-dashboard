@@ -519,12 +519,12 @@ export default function DashboardClient({ portfolio, trades, positions, baseCapi
               <p style={{ fontSize: 13, color: "#5f6368", margin: 0, lineHeight: 1.7 }}>
                 「AIが本当に株式市場で通用するのか」という問いに、実資金で答えを出すプロジェクトです。
                 バックテストやシミュレーションではなく、リアルマネーでの実績をすべて公開します。
-                銘柄名は<strong style={{ color: "#202124" }}>当日18:00</strong>に公開（引け後）。
+                データは<strong style={{ color: "#202124" }}>当日18:00</strong>に反映（引け後）。銘柄・損益ともに即日公開。
               </p>
             </div>
 
             {/* 3戦略 */}
-            <div className="grid-strategies" style={{ display: "grid", gridTemplateColumns: "repeat(3,1fr)", gap: 14 }}>
+            <div className="grid-strategies" style={{ display: "grid", gridTemplateColumns: "repeat(2,1fr)", gap: 14 }}>
               {[
                 {
                   tag: "PEAD", sub: "Post-Earnings Announcement Drift",
