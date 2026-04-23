@@ -423,6 +423,15 @@ export default function DashboardClient({ portfolio, trades, positions, baseCapi
               const sorted = [...trades].sort((a, b) => new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime());
               const buyQueues: Record<string, { id: number; price: number; qty: number }[]> = {};
               const pnlMap: Record<number, number> = {};
+              // 最新ポジション（前日分）を取得
+              const latestPositions = Object.values(
+                positions.reduce((acc, p) => {
+                  const key = p.ticker;
+                  if (!acc[key] || new Date(p.updated_at) > new Date(acc[key].updated_at)) acc[key] = p;
+                  return acc;
+                }, {} as Record<string, Position>)
+              );
+              const positionMap = Object.fromEntries(latestPositions.map(p => [p.ticker, p]));
               for (const t of sorted) {
                 if (t.side === "BUY") {
                   if (!buyQueues[t.ticker]) buyQueues[t.ticker] = [];
@@ -436,7 +445,15 @@ export default function DashboardClient({ portfolio, trades, positions, baseCapi
                     totalCost += buy.price * used; matched += used; remaining -= used; buy.qty -= used;
                     if (buy.qty === 0) queue.shift();
                   }
-                  if (matched > 0) pnlMap[t.id] = Math.round((t.price - totalCost / matched) * matched);
+                  if (matched > 0) {
+                    pnlMap[t.id] = Math.round((t.price - totalCost / matched) * matched);
+                  } else {
+                    // マッチしないSELL: 前日ポジションから損益を計算
+                    const pos = positionMap[t.ticker];
+                    if (pos && pos.entry_price != null) {
+                      pnlMap[t.id] = Math.round((t.price - pos.entry_price) * t.quantity);
+                    }
+                  }
                 }
               }
               return (
@@ -444,7 +461,7 @@ export default function DashboardClient({ portfolio, trades, positions, baseCapi
                   <table style={{ width: "100%", borderCollapse: "collapse" }}>
                     <thead>
                       <tr style={{ background: "#f8f9fa" }}>
-                        {["日付", "銘柄", "売買", "株数", "単価", "約定金額", "損益"].map(h => (
+                        {["日付", "銘柄", "売買", "株数", "単価", "約定金額", "損益", "戦略"].map(h => (
                           <th key={h} style={{ padding: "10px 20px", textAlign: h === "損益" || h === "株数" || h === "単価" || h === "約定金額" ? "right" : "left", fontSize: 11, fontWeight: 600, color: "#9aa0a6", textTransform: "uppercase", letterSpacing: ".8px", borderBottom: "1px solid #e8eaed" }}>
                             {h}
                           </th>
@@ -473,6 +490,13 @@ export default function DashboardClient({ portfolio, trades, positions, baseCapi
                             <td style={{ padding: "14px 20px", fontFamily: "monospace", fontSize: 13, color: "#5f6368", textAlign: "right" }}>{t.notional != null ? `¥${t.notional.toLocaleString()}` : "—"}</td>
                             <td style={{ padding: "14px 20px", fontFamily: "monospace", fontSize: 13, fontWeight: 600, textAlign: "right", color: pnl == null ? "#ccc" : pnl >= 0 ? "#34a853" : "#ea4335" }}>
                               {pnl != null ? `${pnl >= 0 ? "+" : ""}¥${pnl.toLocaleString()}` : "—"}
+                            </td>
+                            <td style={{ padding: "14px 20px" }}>
+                              {t.strategy && (
+                                <span style={{ fontSize: 11, padding: "2px 8px", borderRadius: 4, background: t.strategy === "PEAD" ? "#e8f0fe" : t.strategy === "Turnover" ? "#e6f4ea" : "#f3f3f3", color: t.strategy === "PEAD" ? "#1a73e8" : t.strategy === "Turnover" ? "#34a853" : "#5f6368", fontWeight: 500 }}>
+                                  {t.strategy}
+                                </span>
+                              )}
                             </td>
                           </tr>
                         );
