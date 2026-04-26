@@ -8,29 +8,38 @@ const geist = Geist({
 });
 
 export const viewport: Viewport = {
-  themeColor: "#2563eb",
+  themeColor: "#0d2137",
 };
 
 export const metadata: Metadata = {
-  title: "kabu-trader | Claude Code 自動売買 Live",
+  title: "KabuDashboard | 株売データを一画面で監視",
   description:
     "Claude Codeによる日本株完全自動売買のリアルタイムパフォーマンス公開。PEAD戦略・売買代金急増戦略のトレード履歴をリアルデータで公開。",
+  manifest: "/site.webmanifest",
+  icons: {
+    icon: [{ url: "/icon.svg", type: "image/svg+xml" }],
+    apple: "/apple-touch-icon.png",
+  },
   openGraph: {
-    title: "kabu-trader | Claude Code 自動売買 Live",
+    title: "KabuDashboard | 株売データを一画面で監視",
     description:
       "AIが日本株を自動売買。Claude Codeによる実資金運用のパフォーマンスをリアルタイム公開。",
     type: "website",
+    siteName: "KabuDashboard",
+    locale: "ja_JP",
+    images: [{ url: "/og-image.png", width: 1200, height: 630, alt: "KabuDashboard" }],
   },
   twitter: {
     card: "summary_large_image",
-    title: "kabu-trader | Claude Code 自動売買 Live",
+    title: "KabuDashboard | 株売データを一画面で監視",
     description: "AIが日本株を自動売買。実資金運用のパフォーマンスをリアルタイム公開。",
+    images: ["/og-image.png"],
   },
   other: {
     "mobile-web-app-capable": "yes",
     "apple-mobile-web-app-capable": "yes",
-    "apple-mobile-web-app-status-bar-style": "default",
-    "apple-mobile-web-app-title": "kabu-trader",
+    "apple-mobile-web-app-status-bar-style": "black-translucent",
+    "apple-mobile-web-app-title": "KabuDashboard",
   },
 };
 
