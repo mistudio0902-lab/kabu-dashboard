@@ -13,12 +13,9 @@ export default function Header() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 h-14 flex items-center justify-between">
         {/* ロゴ */}
         <Link href="/" className="flex items-center gap-2 hover:opacity-80 transition-opacity">
-          <svg className="w-5 h-5 text-gray-800" viewBox="0 0 24 24" fill="currentColor">
-            <rect x="2" y="12" width="4" height="10" rx="1" />
-            <rect x="9" y="7" width="4" height="15" rx="1" />
-            <rect x="16" y="3" width="4" height="19" rx="1" />
-          </svg>
-          <span className="font-semibold text-gray-900 text-sm">kabu-trader</span>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src="/icon.svg" alt="KabuDashboard" width={28} height={28} style={{ borderRadius: 6 }} />
+          <span className="font-bold text-sm" style={{ color: '#0d2137', letterSpacing: '-0.02em' }}>KabuDashboard</span>
         </Link>
 
         {/* ナビ */}
