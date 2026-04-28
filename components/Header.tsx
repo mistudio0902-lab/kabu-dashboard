@@ -14,7 +14,7 @@ export default function Header() {
         {/* ロゴ */}
         <Link href="/" className="flex items-center hover:opacity-80 transition-opacity">
           {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src="/logo.png" alt="kabu dashboard" height={36} style={{ height: 36, width: 'auto' }} />
+          <img src="/logo.png" alt="kabu dashboard" height={48} style={{ height: 48, width: 'auto' }} />
         </Link>
 
         {/* ナビ */}
