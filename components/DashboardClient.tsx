@@ -171,7 +171,7 @@ export default function DashboardClient({ portfolio, trades, positions, baseCapi
               AIが自律的に売買する株式トレードの実績をリアルタイム公開しています
             </div>
             <div style={{ fontSize: 12, color: "#3b6ec0", lineHeight: 1.6 }}>
-              人間の判断を介さず、独自アルゴリズム（PEAD・売買代金急増の2戦略）によりシグナル検知から発注まで全自動で運用。成績は加工なしで公開しています。
+              人間の判断を介さず、独自アルゴリズム（PEAD・コンボ戦略の2本柱）によりシグナル検知から発注まで全自動で運用。成績は加工なしで公開しています。
             </div>
           </div>
         </div>
@@ -497,7 +497,7 @@ export default function DashboardClient({ portfolio, trades, positions, baseCapi
                             </td>
                             <td style={{ padding: "14px 20px" }}>
                               {t.strategy && (
-                                <span style={{ fontSize: 11, padding: "2px 8px", borderRadius: 4, background: t.strategy === "PEAD" ? "#e8f0fe" : t.strategy === "Turnover" ? "#e6f4ea" : "#f3f3f3", color: t.strategy === "PEAD" ? "#1a73e8" : t.strategy === "Turnover" ? "#34a853" : "#5f6368", fontWeight: 500 }}>
+                                <span style={{ fontSize: 11, padding: "2px 8px", borderRadius: 4, background: t.strategy === "PEAD" ? "#e8f0fe" : (t.strategy === "Combo" || t.strategy === "Turnover") ? "#e6f4ea" : "#f3f3f3", color: t.strategy === "PEAD" ? "#1a73e8" : (t.strategy === "Combo" || t.strategy === "Turnover") ? "#34a853" : "#5f6368", fontWeight: 500 }}>
                                   {t.strategy}
                                 </span>
                               )}
@@ -525,7 +525,7 @@ export default function DashboardClient({ portfolio, trades, positions, baseCapi
                 </div>
                 <div>
                   <div style={{ fontSize: 15, fontWeight: 700, color: "#202124" }}>採用戦略 &amp; 概要</div>
-                  <div style={{ fontSize: 12, color: "#9aa0a6", marginTop: 1 }}>2戦略を並列運用 / シグナル自動スクリーニング</div>
+                  <div style={{ fontSize: 12, color: "#9aa0a6", marginTop: 1 }}>PEAD + Combo の2戦略を並列運用 / シグナル自動スクリーニング</div>
                 </div>
               </div>
               <a
@@ -558,13 +558,13 @@ export default function DashboardClient({ portfolio, trades, positions, baseCapi
                   tag: "PEAD", sub: "Post-Earnings Announcement Drift",
                   tagColor: "#1a73e8", tagBg: "#e8f0fe",
                   title: "決算モメンタム戦略",
-                  desc: "決算発表後の業績上方修正銘柄をサプライズ率でスコアリングし、翌営業日の寄付きで買い。発表後に株価がサプライズの方向へ数日ドリフトする現象（PEAD）を利用する短期戦略。",
+                  desc: "決算発表後の業績上方修正銘柄をサプライズ率でスコアリングし、翌営業日の寄付きで成行買い。発表後に株価がサプライズの方向へ数日ドリフトする現象（PEAD）を利用する短期戦略。資金配分25%。",
                 },
                 {
-                  tag: "Turnover", sub: "Turnover Momentum",
+                  tag: "Combo", sub: "Multi-Signal Combination",
                   tagColor: "#34a853", tagBg: "#e6f4ea",
-                  title: "売買代金急増戦略",
-                  desc: "前日の売買代金が過去平均から急増した銘柄を検知し、翌営業日の寄付きで買い。機関投資家の参入やトレンド発生初期に伴う需給変化を捉える短期戦略。",
+                  title: "コンボ戦略",
+                  desc: "複数のシグナルを組み合わせてスクリーニングし、上位銘柄を週初の寄付きで成行買い。各銘柄は均等配分（資金÷保有銘柄数）でエントリー。資金配分60%。",
                 },
               ].map(s => (
                 <div key={s.tag} style={{ borderRadius: 10, overflow: "hidden", border: "1px solid #e8eaed" }}>
@@ -590,7 +590,7 @@ export default function DashboardClient({ portfolio, trades, positions, baseCapi
                 {[
                   { label: "エントリー", desc: "各戦略のシグナルスコア上位銘柄を翌営業日の寄付きで買い" },
                   { label: "エグジット", desc: "保有営業日数の上限・損切り・利確のいずれか早い条件で決済" },
-                  { label: "ポジションサイジング", desc: "シグナルスコアに比例して各銘柄の投資比率を自動計算" },
+                  { label: "ポジションサイジング", desc: "各戦略の配分資金を保有銘柄数で均等分割（スコアは銘柄選定のランキングに使用）" },
                   { label: "資金配分", desc: "2戦略間でリスク調整済みの配分比率を設定し、同一銘柄の重複保有を防止" },
                   { label: "日次リスク制限", desc: "一定以上の日次損失が発生した場合、新規エントリーを自動停止" },
                 ].map(item => (
