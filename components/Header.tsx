@@ -12,25 +12,31 @@ export default function Header() {
     <header className="bg-white border-b border-gray-100 sticky top-0 z-20">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 h-14 flex items-center justify-between">
         {/* ロゴ */}
-        <Link href="/" className="flex items-center gap-2 hover:opacity-80 transition-opacity">
-          <svg viewBox="0 0 80 80" xmlns="http://www.w3.org/2000/svg" width={28} height={28} style={{ borderRadius: 6, display: 'block' }}>
+        <Link href="/" className="flex items-center gap-3 hover:opacity-80 transition-opacity">
+          {/* k + ascending bars mark — transparent background */}
+          <svg viewBox="0 0 82 90" xmlns="http://www.w3.org/2000/svg" width={36} height={40} style={{ display: 'block' }}>
             <defs>
-              <linearGradient id="hg" x1="0" y1="0" x2="0" y2="1">
+              <linearGradient id="hg" x1="0.2" y1="0" x2="0.8" y2="1">
                 <stop offset="0%" stopColor="#34d399" />
                 <stop offset="100%" stopColor="#0d9488" />
               </linearGradient>
             </defs>
-            <rect width="80" height="80" rx="16" fill="#0a0a0a" />
-            <rect x="8" y="6" width="10" height="40" rx="5" fill="url(#hg)" />
-            <path d="M18 24 L18 33 L49 6 L40 6 Z" fill="url(#hg)" />
-            <rect x="20" y="56" width="10" height="13" rx="4" fill="url(#hg)" />
-            <rect x="33" y="46" width="10" height="23" rx="4" fill="url(#hg)" />
-            <rect x="46" y="36" width="10" height="33" rx="4" fill="url(#hg)" />
+            {/* k stem */}
+            <rect x="4" y="4" width="13" height="82" rx="6.5" fill="url(#hg)" />
+            {/* k upper arm */}
+            <path d="M17 42 L17 28 L62 4 L50 4 Z" fill="url(#hg)" />
+            {/* bar 1 short */}
+            <rect x="27" y="65" width="13" height="21" rx="6" fill="url(#hg)" />
+            {/* bar 2 medium */}
+            <rect x="44" y="52" width="13" height="34" rx="6" fill="url(#hg)" />
+            {/* bar 3 tall */}
+            <rect x="61" y="38" width="13" height="48" rx="6" fill="url(#hg)" />
           </svg>
-          <span className="text-sm" style={{ color: '#0a0a0a', letterSpacing: '-0.02em' }}>
-            <span className="font-bold">kabu</span>
-            <span className="font-light" style={{ color: '#6b7280' }}>dashboard</span>
-          </span>
+          {/* kabu / dashboard stacked text */}
+          <div className="flex flex-col leading-none gap-0.5">
+            <span className="font-bold text-lg tracking-tight" style={{ color: '#1a202c' }}>kabu</span>
+            <span className="font-medium text-xs tracking-tight" style={{ color: '#718096' }}>dashboard</span>
+          </div>
         </Link>
 
         {/* ナビ */}
