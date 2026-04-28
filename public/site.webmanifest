@@ -1,11 +1,11 @@
 {
-  "name": "KabuDashboard",
-  "short_name": "KabuDB",
-  "description": "株売データを一画面で監視するリアルタイムダッシュボード",
+  "name": "kabu dashboard",
+  "short_name": "kabu",
+  "description": "AIによる日本株自動売買の実績をリアルタイム公開",
   "start_url": "/",
   "display": "standalone",
-  "background_color": "#0d2137",
-  "theme_color": "#0d2137",
+  "background_color": "#0a0a0a",
+  "theme_color": "#0d9488",
   "lang": "ja",
   "icons": [
     {

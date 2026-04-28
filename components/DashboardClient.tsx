@@ -171,7 +171,7 @@ export default function DashboardClient({ portfolio, trades, positions, baseCapi
               AIが自律的に売買する株式トレードの実績をリアルタイム公開しています
             </div>
             <div style={{ fontSize: 12, color: "#3b6ec0", lineHeight: 1.6 }}>
-              人間の判断を介さず、独自アルゴリズム（PEAD・売買代金急増・テクニカルモメンタム）によりシグナル検知から発注まで全自動で運用。成績は加工なしで公開しています。
+              人間の判断を介さず、独自アルゴリズム（PEAD・売買代金急増の2戦略）によりシグナル検知から発注まで全自動で運用。成績は加工なしで公開しています。
             </div>
           </div>
         </div>
@@ -591,7 +591,7 @@ export default function DashboardClient({ portfolio, trades, positions, baseCapi
                   { label: "エントリー", desc: "各戦略のシグナルスコア上位銘柄を翌営業日の寄付きで買い" },
                   { label: "エグジット", desc: "保有営業日数の上限・損切り・利確のいずれか早い条件で決済" },
                   { label: "ポジションサイジング", desc: "シグナルスコアに比例して各銘柄の投資比率を自動計算" },
-                  { label: "資金配分", desc: "3戦略間でリスク調整済みの配分比率を設定し、同一銘柄の重複保有を防止" },
+                  { label: "資金配分", desc: "2戦略間でリスク調整済みの配分比率を設定し、同一銘柄の重複保有を防止" },
                   { label: "日次リスク制限", desc: "一定以上の日次損失が発生した場合、新規エントリーを自動停止" },
                 ].map(item => (
                   <div key={item.label} className="flex gap-3" style={{ fontSize: 12 }}>

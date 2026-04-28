@@ -12,9 +12,9 @@ export const viewport: Viewport = {
 };
 
 export const metadata: Metadata = {
-  title: "KabuDashboard | 株売データを一画面で監視",
+  title: "kabu dashboard | AIによる日本株自動売買の実績公開",
   description:
-    "Claude Codeによる日本株完全自動売買のリアルタイムパフォーマンス公開。PEAD戦略・売買代金急増戦略のトレード履歴をリアルデータで公開。",
+    "Claude Codeが日本株を自律的に売買。PEAD戦略・売買代金急増戦略の2本柱で実資金運用中。トレード履歴・損益をリアルタイム公開。",
   manifest: "/site.webmanifest",
   icons: {
     icon: [
@@ -25,17 +25,17 @@ export const metadata: Metadata = {
     apple: "/apple-touch-icon.png",
   },
   openGraph: {
-    title: "KabuDashboard | 株売データを一画面で監視",
+    title: "kabu dashboard | AIによる日本株自動売買の実績公開",
     description:
       "AIが日本株を自動売買。Claude Codeによる実資金運用のパフォーマンスをリアルタイム公開。",
     type: "website",
-    siteName: "KabuDashboard",
+    siteName: "kabu dashboard",
     locale: "ja_JP",
-    images: [{ url: "/og-image.png", width: 1200, height: 630, alt: "KabuDashboard" }],
+    images: [{ url: "/og-image.png", width: 1200, height: 630, alt: "kabu dashboard" }],
   },
   twitter: {
     card: "summary_large_image",
-    title: "KabuDashboard | 株売データを一画面で監視",
+    title: "kabu dashboard | AIによる日本株自動売買の実績公開",
     description: "AIが日本株を自動売買。実資金運用のパフォーマンスをリアルタイム公開。",
     images: ["/og-image.png"],
   },
@@ -43,7 +43,7 @@ export const metadata: Metadata = {
     "mobile-web-app-capable": "yes",
     "apple-mobile-web-app-capable": "yes",
     "apple-mobile-web-app-status-bar-style": "black-translucent",
-    "apple-mobile-web-app-title": "KabuDashboard",
+    "apple-mobile-web-app-title": "kabu dashboard",
   },
 };
 

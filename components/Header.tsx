@@ -10,11 +10,11 @@ export default function Header() {
 
   return (
     <header className="bg-white border-b border-gray-100 sticky top-0 z-20">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 h-14 flex items-center justify-between">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 flex items-center justify-between" style={{ height: 96 }}>
         {/* ロゴ */}
         <Link href="/" className="flex items-center hover:opacity-80 transition-opacity">
           {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src="/logo.png" alt="kabu dashboard" style={{ height: 52, width: 'auto' }} />
+          <img src="/logo.png" alt="kabu dashboard" style={{ height: 80, width: 'auto' }} />
         </Link>
 
         {/* ナビ */}
