@@ -1,19 +1,14 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+<svg viewBox="0 0 80 80" xmlns="http://www.w3.org/2000/svg" width="80" height="80">
   <defs>
-    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" style="stop-color:#0d2137"/>
-      <stop offset="100%" style="stop-color:#0a3050"/>
-    </linearGradient>
-    <linearGradient id="accent" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" style="stop-color:#00d4aa"/>
-      <stop offset="100%" style="stop-color:#00a884"/>
+    <linearGradient id="g" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#34d399" />
+      <stop offset="100%" stop-color="#0d9488" />
     </linearGradient>
   </defs>
-  <rect width="512" height="512" rx="96" fill="url(#bg)"/>
-  <!-- K letter -->
-  <rect x="120" y="120" width="56" height="272" rx="12" fill="url(#accent)"/>
-  <polygon points="176,256 320,120 388,120 244,256 388,392 320,392" fill="url(#accent)"/>
-  <!-- Arrow up-right -->
-  <line x1="300" y1="200" x2="400" y2="100" stroke="#00d4aa" stroke-width="28" stroke-linecap="round"/>
-  <polygon points="400,100 350,110 390,150" fill="#00d4aa"/>
+  <rect width="80" height="80" rx="16" fill="#0a0a0a" />
+  <rect x="8" y="6" width="10" height="40" rx="5" fill="url(#g)" />
+  <path d="M18 24 L18 33 L49 6 L40 6 Z" fill="url(#g)" />
+  <rect x="20" y="56" width="10" height="13" rx="4" fill="url(#g)" />
+  <rect x="33" y="46" width="10" height="23" rx="4" fill="url(#g)" />
+  <rect x="46" y="36" width="10" height="33" rx="4" fill="url(#g)" />
 </svg>
