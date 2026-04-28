@@ -558,7 +558,7 @@ export default function DashboardClient({ portfolio, trades, positions, baseCapi
                   tag: "PEAD", sub: "Post-Earnings Announcement Drift",
                   tagColor: "#1a73e8", tagBg: "#e8f0fe",
                   title: "決算モメンタム戦略",
-                  desc: "決算発表後の業績上方修正銘柄をサプライズ率でスコアリングし、翌営業日の寄付きで成行買い。発表後に株価がサプライズの方向へ数日ドリフトする現象（PEAD）を利用する短期戦略。資金配分25%。",
+                  desc: "決算発表後の業績上方修正銘柄をサプライズ率でスコアリングし、翌営業日の寄付きで成行買い。発表後に株価がサプライズの方向へ数日ドリフトする現象（PEAD）を利用する短期戦略。資金配分40%。",
                 },
                 {
                   tag: "Combo", sub: "Multi-Signal Combination",
