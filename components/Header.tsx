@@ -13,9 +13,24 @@ export default function Header() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 h-14 flex items-center justify-between">
         {/* ロゴ */}
         <Link href="/" className="flex items-center gap-2 hover:opacity-80 transition-opacity">
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src="/icon.svg" alt="KabuDashboard" width={28} height={28} style={{ borderRadius: 6 }} />
-          <span className="font-bold text-sm" style={{ color: '#0d2137', letterSpacing: '-0.02em' }}>KabuDashboard</span>
+          <svg viewBox="0 0 80 80" xmlns="http://www.w3.org/2000/svg" width={28} height={28} style={{ borderRadius: 6, display: 'block' }}>
+            <defs>
+              <linearGradient id="hg" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stopColor="#34d399" />
+                <stop offset="100%" stopColor="#0d9488" />
+              </linearGradient>
+            </defs>
+            <rect width="80" height="80" rx="16" fill="#0a0a0a" />
+            <rect x="8" y="6" width="10" height="40" rx="5" fill="url(#hg)" />
+            <path d="M18 24 L18 33 L49 6 L40 6 Z" fill="url(#hg)" />
+            <rect x="20" y="56" width="10" height="13" rx="4" fill="url(#hg)" />
+            <rect x="33" y="46" width="10" height="23" rx="4" fill="url(#hg)" />
+            <rect x="46" y="36" width="10" height="33" rx="4" fill="url(#hg)" />
+          </svg>
+          <span className="text-sm" style={{ color: '#0a0a0a', letterSpacing: '-0.02em' }}>
+            <span className="font-bold">kabu</span>
+            <span className="font-light" style={{ color: '#6b7280' }}>dashboard</span>
+          </span>
         </Link>
 
         {/* ナビ */}
