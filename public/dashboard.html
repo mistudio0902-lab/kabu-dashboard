@@ -125,7 +125,7 @@
         <svg style="width:14px;height:14px" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.739l7.737-8.835L1.254 2.25H8.08l4.259 5.629L18.244 2.25zm-1.161 17.52h1.833L7.084 4.126H5.117L17.083 19.77z"/></svg>
         @miautolab
       </a>
-      <span style="font-size:11px;color:#9ca3af;font-family:monospace">T-2: 2026-04-28</span>
+      <span style="font-size:11px;color:#9ca3af;font-family:monospace">T-2: 2026-05-01</span>
     </nav>
   </div>
 </header>
@@ -148,7 +148,7 @@
       <div class="hero-right">
         <div class="vs-badge" style="background:#fce8e6;border-color:#ef9a9a">
           <div class="vs-badge-label" style="color:#ea4335">vs TOPIX（同期間）</div>
-          <div class="vs-badge-value" style="color:#ea4335">-4.4%</div>
+          <div class="vs-badge-value" style="color:#ea4335">-2.9%</div>
           <div class="vs-badge-sub" style="color:#ea4335">アンダーパフォーム ↓</div>
         </div></div>
     </div>
@@ -171,8 +171,8 @@
       </div>
       <div class="metric-card">
         <div class="metric-label">運用期間</div>
-        <div class="metric-value" style="color:var(--text-secondary)">13<span style="font-size:18px;font-family:'Noto Sans JP'">日</span></div>
-        <div class="metric-sub">2026-04-06 〜 2026-04-28</div>
+        <div class="metric-value" style="color:var(--text-secondary)">14<span style="font-size:18px;font-family:'Noto Sans JP'">日</span></div>
+        <div class="metric-sub">2026-04-06 〜 2026-04-30</div>
       </div>
     </div>
   </div>
@@ -691,7 +691,7 @@
       </table>
     </div>
     <div style="padding:16px 28px;font-size:12px;color:var(--text-muted);border-top:1px solid var(--border)">
-      ※ 入出金はP&L計算から除外済み ｜ データ基準日: 2026-04-28 （T-2）
+      ※ 入出金はP&L計算から除外済み ｜ データ基準日: 2026-05-01 （T-2）
     </div>
   </div>
 
@@ -699,7 +699,7 @@
 
 <footer class="footer">
   <div class="footer-left">
-    <span>生成: 2026-04-28 22:57 JST</span>
+    <span>生成: 2026-05-01 08:38 JST</span>
     <div class="footer-dot"></div>
     <span>kabustation API + J-Quants</span>
     <div class="footer-dot"></div>
@@ -710,10 +710,10 @@
 
 <script>
 (function(){
-  const eqLabels = ["04/06", "04/08", "04/09", "04/10", "04/13", "04/14", "04/17", "04/20", "04/21", "04/22", "04/23", "04/24", "04/28"];
-  const eqValues = [1000000, 1000000, 998108, 992453, 984347, 987049, 995779, 1005427, 1011076, 1002762, 1002762, 985292, 990062];
-  const tpxLabels = ["04/06", "04/08", "04/09", "04/10", "04/13", "04/14", "04/17", "04/20", "04/21", "04/22", "04/23", "04/24", "04/28"];
-  const tpxValues = [1000000, 1035160, 1025594, 1025077, 1020682, 1029472, 1031799, 1035677, 1032833, 1026111, 1017580, 1017838, 1034126];
+  const eqLabels = ["04/06", "04/08", "04/09", "04/10", "04/13", "04/14", "04/17", "04/20", "04/21", "04/22", "04/23", "04/24", "04/28", "04/30"];
+  const eqValues = [1000000, 1000000, 998108, 992453, 984347, 987049, 995779, 1005427, 1011076, 1002762, 1002762, 985292, 990062, 990062];
+  const tpxLabels = ["04/06", "04/08", "04/09", "04/10", "04/13", "04/14", "04/17", "04/20", "04/21", "04/22", "04/23", "04/24", "04/28", "04/30"];
+  const tpxValues = [1000000, 1035160, 1025594, 1025077, 1020682, 1029472, 1031799, 1035677, 1032833, 1026111, 1017580, 1017838, 1034126, 1018872];
 
   const ctx = document.getElementById('perfChart').getContext('2d');
   const gBlue = ctx.createLinearGradient(0,0,0,320);
