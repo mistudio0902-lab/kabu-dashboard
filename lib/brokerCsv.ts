@@ -56,30 +56,40 @@ function parseCsvLine(line: string): string[] {
   return out;
 }
 
+function num(value: string | undefined): number {
+  return Number((value ?? "0").replaceAll(",", "")) || 0;
+}
+
 export function loadBrokerRows(): BrokerRow[] {
   if (!BROKER_CSV) return [];
   if (!fs.existsSync(BROKER_CSV)) return [];
+
+  // TRADE_KABU_CSV is disabled on Vercel. If enabled locally, read the broker
+  // export as UTF-8 only; production gets canonical rows from Supabase.
   const text = fs.readFileSync(BROKER_CSV, "utf8").replace(/^\uFEFF/, "");
   const lines = text.split(/\r?\n/).filter(Boolean);
   if (lines.length < 2) return [];
+
   const header = parseCsvLine(lines[0]);
   const idx = (name: string) => header.indexOf(name);
   return lines.slice(1).flatMap((line) => {
     const r = parseCsvLine(line);
     const dateRaw = r[idx("約定日")];
     const code = r[idx("銘柄コード")];
-    const side = r[idx("売買区分")] === "買" ? "BUY" : "SELL";
+    const sideRaw = r[idx("売買区分")];
     if (!dateRaw || !code) return [];
-    return [{
-      date: dateRaw.replaceAll("/", "-"),
-      name: r[idx("銘柄名")] ?? "",
-      ticker: `${code.replace(".T", "")}.T`,
-      side,
-      quantity: Number(r[idx("数量")] ?? 0),
-      price: Number(r[idx("単価")] ?? 0),
-      notional: Number(r[idx("受渡金額")] ?? 0),
-      pnl: Number(r[idx("売買損益")] ?? 0),
-    }];
+    return [
+      {
+        date: dateRaw.replaceAll("/", "-"),
+        name: r[idx("銘柄名")] ?? "",
+        ticker: `${code.replace(".T", "")}.T`,
+        side: sideRaw === "買" ? "BUY" : "SELL",
+        quantity: num(r[idx("数量")]),
+        price: num(r[idx("単価")]),
+        notional: num(r[idx("受渡金額")]),
+        pnl: num(r[idx("売買損益")]),
+      },
+    ];
   });
 }
 
@@ -132,6 +142,7 @@ export function applyBrokerPortfolio(portfolio: PortfolioDaily[], rows = loadBro
   for (const row of rows) {
     byDate.set(row.date, [...(byDate.get(row.date) ?? []), row]);
   }
+
   const merged = new Map(portfolio.map((p) => [p.date, { ...p }]));
   const dates = [...byDate.keys()].sort();
   const firstBrokerDate = dates[0];
@@ -175,18 +186,23 @@ export function brokerPositions(rows = loadBrokerRows()): Position[] {
       if (lot.qty <= 0) q.shift();
     }
   }
+
   let id = 9_000_000;
-  return [...lots.entries()].flatMap(([ticker, q]) => q.filter((lot) => lot.qty > 0).map((lot) => ({
-    id: id++,
-    date: lot.date,
-    ticker,
-    quantity: lot.qty,
-    entry_price: lot.price,
-    current_price: null,
-    unrealized_pnl: 0,
-    side: "LONG" as const,
-    strategy: "broker_csv",
-    updated_at: `${lot.date}T15:30:00+09:00`,
-    company_name: lot.name,
-  })));
+  return [...lots.entries()].flatMap(([ticker, q]) =>
+    q
+      .filter((lot) => lot.qty > 0)
+      .map((lot) => ({
+        id: id++,
+        date: lot.date,
+        ticker,
+        quantity: lot.qty,
+        entry_price: lot.price,
+        current_price: null,
+        unrealized_pnl: 0,
+        side: "LONG" as const,
+        strategy: "broker_csv",
+        updated_at: `${lot.date}T15:30:00+09:00`,
+        company_name: lot.name,
+      })),
+  );
 }
