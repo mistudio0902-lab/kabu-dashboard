@@ -34,29 +34,6 @@ type Props = {
   baseCapital?: number;
 };
 
-function calcFifoPnl(trades: Trade[]): number {
-  const sorted = [...trades].sort((a, b) => new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime());
-  const buyQueues: Record<string, { price: number; qty: number }[]> = {};
-  let total = 0;
-  for (const t of sorted) {
-    if (t.side === "BUY") {
-      if (!buyQueues[t.ticker]) buyQueues[t.ticker] = [];
-      buyQueues[t.ticker].push({ price: t.price, qty: t.quantity });
-    } else {
-      const queue = buyQueues[t.ticker] ?? [];
-      let remaining = t.quantity, cost = 0, matched = 0;
-      while (remaining > 0 && queue.length > 0) {
-        const buy = queue[0];
-        const used = Math.min(buy.qty, remaining);
-        cost += buy.price * used; matched += used; remaining -= used; buy.qty -= used;
-        if (buy.qty === 0) queue.shift();
-      }
-      if (matched > 0) total += Math.round((t.price - cost / matched) * matched);
-    }
-  }
-  return total;
-}
-
 function calcStats(data: PortfolioDaily[], base: number, trades: Trade[], positions: Position[]) {
   if (!data.length) return null;
   const first = data[0];
@@ -376,7 +353,7 @@ export default function DashboardClient({ portfolio, trades, positions, baseCapi
                       ).filter(p => !soldTickers.has(p.ticker));
                     })().map((p, i) => {
                       const ticker = p.ticker.replace(".T", "");
-                      const companyName = COMPANY_NAMES[ticker] ?? "";
+                      const companyName = p.company_name ?? COMPANY_NAMES[ticker] ?? "";
                       const totalCost = p.entry_price * p.quantity;
                       // unrealized_pnl がnullの場合はcurrent_priceから計算、それもなければentry_priceベース
                       const pnl = p.unrealized_pnl !== null && p.unrealized_pnl !== undefined
@@ -441,6 +418,10 @@ export default function DashboardClient({ portfolio, trades, positions, baseCapi
                   if (!buyQueues[t.ticker]) buyQueues[t.ticker] = [];
                   buyQueues[t.ticker].push({ id: t.id, price: t.price, qty: t.quantity });
                 } else {
+                  if (t.realized_pnl != null) {
+                    pnlMap[t.id] = Math.round(t.realized_pnl);
+                    continue;
+                  }
                   const queue = buyQueues[t.ticker] ?? [];
                   let remaining = t.quantity, totalCost = 0, matched = 0;
                   while (remaining > 0 && queue.length > 0) {
@@ -475,7 +456,7 @@ export default function DashboardClient({ portfolio, trades, positions, baseCapi
                     <tbody>
                       {trades.map((t, i) => {
                         const ticker = t.ticker.replace(".T", "");
-                        const companyName = COMPANY_NAMES[ticker] ?? "";
+                        const companyName = t.company_name ?? COMPANY_NAMES[ticker] ?? "";
                         const pnl = pnlMap[t.id];
                         return (
                           <tr key={i} style={{ borderBottom: "1px solid #e8eaed" }} onMouseEnter={e => (e.currentTarget.style.background = "#f8fafe")} onMouseLeave={e => (e.currentTarget.style.background = "transparent")}>

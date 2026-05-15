@@ -1,6 +1,14 @@
 import { createClient } from "@supabase/supabase-js";
 import DashboardClient from "@/components/DashboardClient";
 import type { PortfolioDaily, Trade, Position } from "@/lib/supabase";
+import {
+  applyBrokerPortfolio,
+  brokerPositions,
+  brokerTrades,
+  enrichPositionNames,
+  enrichTradeNames,
+  loadBrokerRows,
+} from "@/lib/brokerCsv";
 
 export const dynamic = 'force-dynamic';
 
@@ -96,7 +104,8 @@ async function getData() {
     fetchTopix(PORTFOLIO_START_DATE, cutoff),
   ]);
 
-  const rawPortfolio = (portfolioRes.data ?? []) as PortfolioDaily[];
+  const brokerRows = loadBrokerRows();
+  const rawPortfolio = applyBrokerPortfolio((portfolioRes.data ?? []) as PortfolioDaily[], brokerRows);
 
   // TOPIX基準リターン計算（最初の取引日のTOPIX終値を100%とする）
   const topixDates = Object.keys(topixPrices).sort();
@@ -118,8 +127,15 @@ async function getData() {
 
   return {
     portfolio,
-    trades: (tradesRes.data ?? []) as Trade[],
-    positions: (positionsRes.data ?? []) as Position[],
+    trades: enrichTradeNames(brokerRows.length
+      ? [
+          ...brokerTrades(brokerRows),
+          ...((tradesRes.data ?? []) as Trade[]).filter(
+            (t) => !brokerRows.some((r) => r.date === t.date)
+          ),
+        ].sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime())
+      : (tradesRes.data ?? []) as Trade[], brokerRows),
+    positions: enrichPositionNames(brokerRows.length ? brokerPositions(brokerRows) : (positionsRes.data ?? []) as Position[], brokerRows),
   };
 }
 

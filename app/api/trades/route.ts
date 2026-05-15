@@ -1,12 +1,18 @@
 import { createClient } from "@supabase/supabase-js";
 import { NextResponse } from "next/server";
+import { brokerTrades, enrichTradeNames, loadBrokerRows } from "@/lib/brokerCsv";
 
 export const dynamic = 'force-dynamic';
 
 export async function GET() {
+  const brokerRows = loadBrokerRows();
+  if (brokerRows.length) {
+    return NextResponse.json(enrichTradeNames(brokerTrades(brokerRows), brokerRows));
+  }
+
   const supabase = createClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+    process.env.SUPABASE_SERVICE_KEY ?? process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
   );
 
   // RLS で2日遅延フィルター適用済み（anon キー）
@@ -21,5 +27,5 @@ export async function GET() {
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
 
-  return NextResponse.json(data);
+  return NextResponse.json(enrichTradeNames(data ?? []));
 }

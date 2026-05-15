@@ -25,6 +25,10 @@ function calcPnl(trades: Trade[]): Map<number, number> {
       if (!buyQueues.has(key)) buyQueues.set(key, []);
       buyQueues.get(key)!.push({ id: t.id, price: t.price, qty: t.quantity });
     } else {
+      if (t.realized_pnl != null) {
+        pnlMap.set(t.id, Math.round(t.realized_pnl));
+        continue;
+      }
       const queue = buyQueues.get(key) ?? [];
       let remaining = t.quantity;
       let totalCost = 0;
@@ -79,12 +83,16 @@ export default function TradeHistory({ trades }: Props) {
             const dateStr = `${date.getMonth() + 1}/${date.getDate()} ${String(date.getHours()).padStart(2, "0")}:${String(date.getMinutes()).padStart(2, "0")}`;
             const ticker = t.ticker.replace(".T", "");
             const strategyClass = STRATEGY_COLOR[t.strategy ?? ""] ?? "bg-gray-50 text-gray-600";
+            const companyName = t.company_name ?? "";
             const pnl = pnlMap.get(t.id);
 
             return (
               <tr key={t.id} className="hover:bg-gray-50 transition-colors">
                 <td className="py-3 px-4 text-gray-500 font-mono text-xs">{dateStr}</td>
-                <td className="py-3 px-4 font-semibold text-gray-900">{ticker}</td>
+                <td className="py-3 px-4">
+                  <div className="font-semibold text-gray-900">{ticker}</div>
+                  {companyName && <div className="text-xs text-gray-400 mt-0.5">{companyName}</div>}
+                </td>
                 <td className="py-3 px-4">
                   <span className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-semibold ${t.side === "BUY" ? "bg-emerald-50 text-emerald-700" : "bg-red-50 text-red-700"}`}>
                     {t.side === "BUY" ? "買い" : "売り"}

@@ -33,6 +33,8 @@ export type Trade = {
   order_result: string | null;
   strategy: string | null;
   strategy_name?: string | null;
+  company_name?: string | null;
+  realized_pnl?: number | null;
 };
 
 export type Position = {
@@ -46,4 +48,5 @@ export type Position = {
   side: "LONG" | "SHORT";
   strategy: string | null;
   updated_at: string;
+  company_name?: string | null;
 };
