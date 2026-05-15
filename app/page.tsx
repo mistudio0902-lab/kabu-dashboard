@@ -5,9 +5,10 @@ import {
   applyBrokerPortfolio,
   brokerPositions,
   brokerTrades,
+  enrichBrokerTradeMetadata,
   enrichPositionNames,
-  enrichTradeNames,
   loadBrokerRows,
+  sortTradesForDisplay,
 } from "@/lib/brokerCsv";
 
 export const dynamic = 'force-dynamic';
@@ -127,14 +128,14 @@ async function getData() {
 
   return {
     portfolio,
-    trades: enrichTradeNames(brokerRows.length
+    trades: sortTradesForDisplay(enrichBrokerTradeMetadata(brokerRows.length
       ? [
           ...brokerTrades(brokerRows),
           ...((tradesRes.data ?? []) as Trade[]).filter(
             (t) => !brokerRows.some((r) => r.date === t.date)
           ),
-        ].sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime())
-      : (tradesRes.data ?? []) as Trade[], brokerRows),
+        ]
+      : (tradesRes.data ?? []) as Trade[], brokerRows)),
     positions: enrichPositionNames(brokerRows.length ? brokerPositions(brokerRows) : (positionsRes.data ?? []) as Position[], brokerRows),
   };
 }

@@ -1,13 +1,18 @@
 import { createClient } from "@supabase/supabase-js";
 import { NextResponse } from "next/server";
-import { brokerTrades, enrichTradeNames, loadBrokerRows } from "@/lib/brokerCsv";
+import {
+  brokerTrades,
+  enrichBrokerTradeMetadata,
+  loadBrokerRows,
+  sortTradesForDisplay,
+} from "@/lib/brokerCsv";
 
 export const dynamic = 'force-dynamic';
 
 export async function GET() {
   const brokerRows = loadBrokerRows();
   if (brokerRows.length) {
-    return NextResponse.json(enrichTradeNames(brokerTrades(brokerRows), brokerRows));
+    return NextResponse.json(sortTradesForDisplay(enrichBrokerTradeMetadata(brokerTrades(brokerRows), brokerRows)));
   }
 
   const supabase = createClient(
@@ -27,5 +32,5 @@ export async function GET() {
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
 
-  return NextResponse.json(enrichTradeNames(data ?? []));
+  return NextResponse.json(sortTradesForDisplay(enrichBrokerTradeMetadata(data ?? [])));
 }

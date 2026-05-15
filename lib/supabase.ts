@@ -35,6 +35,7 @@ export type Trade = {
   strategy_name?: string | null;
   company_name?: string | null;
   realized_pnl?: number | null;
+  broker_source_order?: number | null;
 };
 
 export type Position = {

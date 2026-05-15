@@ -1,6 +1,7 @@
 import fs from "node:fs";
 
 import type { PortfolioDaily, Position, Trade } from "@/lib/supabase";
+import brokerTradeOverrides from "@/data/brokerTradeOverrides.json";
 
 const BROKER_CSV = process.env.TRADE_KABU_CSV ?? "";
 const BASE_CAPITAL = 1_000_000;
@@ -37,6 +38,20 @@ type BrokerRow = {
   notional: number;
   pnl: number;
 };
+
+type BrokerTradeOverride = {
+  date: string;
+  ticker: string;
+  company_name: string;
+  side: "BUY" | "SELL";
+  quantity: number;
+  price: number;
+  notional: number;
+  realized_pnl: number | null;
+  source_order: number;
+};
+
+const BROKER_TRADE_OVERRIDES = brokerTradeOverrides as BrokerTradeOverride[];
 
 function parseCsvLine(line: string): string[] {
   const out: string[] = [];
@@ -106,6 +121,53 @@ export function enrichTradeNames<T extends Trade>(trades: T[], rows = loadBroker
     ...trade,
     company_name: names[trade.ticker.replace(".T", "")] ?? trade.company_name ?? null,
   }));
+}
+
+function tradeOverrideKey(trade: Pick<Trade, "date" | "ticker" | "side" | "quantity" | "price">): string {
+  return [
+    trade.date,
+    trade.ticker,
+    trade.side,
+    trade.quantity,
+    Number(trade.price).toFixed(4),
+  ].join("|");
+}
+
+const OVERRIDE_BY_KEY = new Map(
+  BROKER_TRADE_OVERRIDES.map((override) => [
+    tradeOverrideKey(override),
+    override,
+  ]),
+);
+
+export function enrichBrokerTradeMetadata<T extends Trade>(trades: T[], rows = loadBrokerRows()): T[] {
+  const named = enrichTradeNames(trades, rows);
+  return named.map((trade) => {
+    const override = OVERRIDE_BY_KEY.get(tradeOverrideKey(trade));
+    return {
+      ...trade,
+      company_name: override?.company_name ?? trade.company_name ?? null,
+      realized_pnl: override?.realized_pnl ?? trade.realized_pnl ?? null,
+      broker_source_order: override?.source_order ?? trade.broker_source_order ?? null,
+      strategy: trade.strategy === "broker_csv" ? null : trade.strategy,
+      strategy_name: trade.strategy === "broker_csv" ? "実取引" : trade.strategy_name,
+    };
+  });
+}
+
+export function sortTradesForDisplay<T extends Trade>(trades: T[]): T[] {
+  return [...trades].sort((a, b) => {
+    const dateCmp = b.date.localeCompare(a.date);
+    if (dateCmp !== 0) return dateCmp;
+
+    const aOrder = a.broker_source_order ?? Number.MAX_SAFE_INTEGER;
+    const bOrder = b.broker_source_order ?? Number.MAX_SAFE_INTEGER;
+    if (aOrder !== bOrder) return aOrder - bOrder;
+
+    const timeCmp = new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime();
+    if (timeCmp !== 0) return timeCmp;
+    return b.id - a.id;
+  });
 }
 
 export function enrichPositionNames<T extends Position>(positions: T[], rows = loadBrokerRows()): T[] {
