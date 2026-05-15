@@ -53,6 +53,19 @@ type BrokerTradeOverride = {
 
 const BROKER_TRADE_OVERRIDES = brokerTradeOverrides as BrokerTradeOverride[];
 
+function overrideRows(): BrokerRow[] {
+  return BROKER_TRADE_OVERRIDES.map((row) => ({
+    date: row.date,
+    name: row.company_name,
+    ticker: row.ticker,
+    side: row.side,
+    quantity: row.quantity,
+    price: row.price,
+    notional: row.notional,
+    pnl: row.realized_pnl ?? 0,
+  }));
+}
+
 function parseCsvLine(line: string): string[] {
   const out: string[] = [];
   let cur = "";
@@ -76,8 +89,8 @@ function num(value: string | undefined): number {
 }
 
 export function loadBrokerRows(): BrokerRow[] {
-  if (!BROKER_CSV) return [];
-  if (!fs.existsSync(BROKER_CSV)) return [];
+  if (!BROKER_CSV) return overrideRows();
+  if (!fs.existsSync(BROKER_CSV)) return overrideRows();
 
   // TRADE_KABU_CSV is disabled on Vercel. If enabled locally, read the broker
   // export as UTF-8 only; production gets canonical rows from Supabase.
