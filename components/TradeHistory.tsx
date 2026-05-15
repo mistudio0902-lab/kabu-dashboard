@@ -82,7 +82,8 @@ export default function TradeHistory({ trades }: Props) {
             const date = new Date(t.timestamp);
             const dateStr = `${date.getMonth() + 1}/${date.getDate()} ${String(date.getHours()).padStart(2, "0")}:${String(date.getMinutes()).padStart(2, "0")}`;
             const ticker = t.ticker.replace(".T", "");
-            const strategyClass = STRATEGY_COLOR[t.strategy ?? ""] ?? "bg-gray-50 text-gray-600";
+            const strategyLabel = t.strategy ?? t.strategy_name ?? null;
+            const strategyClass = STRATEGY_COLOR[strategyLabel ?? ""] ?? "bg-gray-50 text-gray-600";
             const companyName = t.company_name ?? "";
             const pnl = pnlMap.get(t.id);
 
@@ -111,9 +112,9 @@ export default function TradeHistory({ trades }: Props) {
                   )}
                 </td>
                 <td className="py-3 px-4">
-                  {t.strategy && (
+                  {strategyLabel && (
                     <span className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-medium ${strategyClass}`}>
-                      {t.strategy}
+                      {strategyLabel}
                     </span>
                   )}
                 </td>

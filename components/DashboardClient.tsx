@@ -458,6 +458,7 @@ export default function DashboardClient({ portfolio, trades, positions, baseCapi
                         const ticker = t.ticker.replace(".T", "");
                         const companyName = t.company_name ?? COMPANY_NAMES[ticker] ?? "";
                         const pnl = pnlMap[t.id];
+                        const strategyLabel = t.strategy ?? t.strategy_name ?? null;
                         return (
                           <tr key={i} style={{ borderBottom: "1px solid #e8eaed" }} onMouseEnter={e => (e.currentTarget.style.background = "#f8fafe")} onMouseLeave={e => (e.currentTarget.style.background = "transparent")}>
                             <td style={{ padding: "14px 20px", fontFamily: "monospace", fontSize: 12, color: "#5f6368" }}>{t.date}</td>
@@ -477,9 +478,9 @@ export default function DashboardClient({ portfolio, trades, positions, baseCapi
                               {pnl != null ? `${pnl >= 0 ? "+" : ""}¥${pnl.toLocaleString()}` : "—"}
                             </td>
                             <td style={{ padding: "14px 20px" }}>
-                              {t.strategy && (
-                                <span style={{ fontSize: 11, padding: "2px 8px", borderRadius: 4, background: t.strategy === "PEAD" ? "#e8f0fe" : (t.strategy === "Combo" || t.strategy === "Turnover") ? "#e6f4ea" : "#f3f3f3", color: t.strategy === "PEAD" ? "#1a73e8" : (t.strategy === "Combo" || t.strategy === "Turnover") ? "#34a853" : "#5f6368", fontWeight: 500 }}>
-                                  {t.strategy}
+                              {strategyLabel && (
+                                <span style={{ fontSize: 11, padding: "2px 8px", borderRadius: 4, background: strategyLabel === "PEAD" ? "#e8f0fe" : (strategyLabel === "Combo" || strategyLabel === "Turnover") ? "#e6f4ea" : "#f3f3f3", color: strategyLabel === "PEAD" ? "#1a73e8" : (strategyLabel === "Combo" || strategyLabel === "Turnover") ? "#34a853" : "#5f6368", fontWeight: 500 }}>
+                                  {strategyLabel}
                                 </span>
                               )}
                             </td>
