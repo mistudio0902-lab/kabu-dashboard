@@ -8,7 +8,8 @@
     "price": 762.0,
     "notional": 76200.0,
     "realized_pnl": -2200.0,
-    "source_order": 0
+    "source_order": 0,
+    "strategy": "COMBO"
   },
   {
     "date": "2026-05-15",
@@ -19,7 +20,8 @@
     "price": 784.0,
     "notional": 78400.0,
     "realized_pnl": null,
-    "source_order": 1
+    "source_order": 1,
+    "strategy": "COMBO"
   },
   {
     "date": "2026-05-15",
@@ -30,7 +32,8 @@
     "price": 7103.7,
     "notional": 708170.0,
     "realized_pnl": -1830.0,
-    "source_order": 2
+    "source_order": 2,
+    "strategy": "COMBO"
   },
   {
     "date": "2026-05-15",
@@ -41,7 +44,8 @@
     "price": 7100.0,
     "notional": 710000.0,
     "realized_pnl": null,
-    "source_order": 3
+    "source_order": 3,
+    "strategy": "COMBO"
   },
   {
     "date": "2026-05-08",
@@ -52,7 +56,8 @@
     "price": 2238.1,
     "notional": 223810.0,
     "realized_pnl": -7890.0,
-    "source_order": 4
+    "source_order": 4,
+    "strategy": "PEAD"
   },
   {
     "date": "2026-05-01",
@@ -63,7 +68,8 @@
     "price": 1180.5,
     "notional": 118050.0,
     "realized_pnl": -850.0,
-    "source_order": 5
+    "source_order": 5,
+    "strategy": "PEAD"
   },
   {
     "date": "2026-05-01",
@@ -74,7 +80,8 @@
     "price": 1807.5,
     "notional": 180750.0,
     "realized_pnl": -350.0,
-    "source_order": 6
+    "source_order": 6,
+    "strategy": "PEAD"
   },
   {
     "date": "2026-05-01",
@@ -85,7 +92,8 @@
     "price": 1811.0,
     "notional": 181100.0,
     "realized_pnl": null,
-    "source_order": 7
+    "source_order": 7,
+    "strategy": "PEAD"
   },
   {
     "date": "2026-04-30",
@@ -96,7 +104,8 @@
     "price": 1189.0,
     "notional": 118900.0,
     "realized_pnl": null,
-    "source_order": 8
+    "source_order": 8,
+    "strategy": "PEAD"
   },
   {
     "date": "2026-04-30",
@@ -107,7 +116,8 @@
     "price": 2317.0,
     "notional": 231700.0,
     "realized_pnl": null,
-    "source_order": 9
+    "source_order": 9,
+    "strategy": "PEAD"
   },
   {
     "date": "2026-04-28",
@@ -118,7 +128,8 @@
     "price": 1508.0,
     "notional": 150800.0,
     "realized_pnl": 3800.0,
-    "source_order": 10
+    "source_order": 10,
+    "strategy": "PEAD"
   },
   {
     "date": "2026-04-28",
@@ -129,7 +140,8 @@
     "price": 1018.7,
     "notional": 101870.0,
     "realized_pnl": 970.0,
-    "source_order": 11
+    "source_order": 11,
+    "strategy": "PEAD"
   },
   {
     "date": "2026-04-28",
@@ -140,7 +152,8 @@
     "price": 1470.0,
     "notional": 147000.0,
     "realized_pnl": null,
-    "source_order": 12
+    "source_order": 12,
+    "strategy": "PEAD"
   },
   {
     "date": "2026-04-28",
@@ -151,7 +164,8 @@
     "price": 1009.0,
     "notional": 100900.0,
     "realized_pnl": null,
-    "source_order": 13
+    "source_order": 13,
+    "strategy": "PEAD"
   },
   {
     "date": "2026-04-24",
@@ -162,7 +176,8 @@
     "price": 2977.5,
     "notional": 297750.0,
     "realized_pnl": 4750.0,
-    "source_order": 14
+    "source_order": 14,
+    "strategy": "PEAD"
   },
   {
     "date": "2026-04-24",
@@ -173,7 +188,8 @@
     "price": 1390.8,
     "notional": 139080.0,
     "realized_pnl": -10420.0,
-    "source_order": 15
+    "source_order": 15,
+    "strategy": "COMBO"
   },
   {
     "date": "2026-04-24",
@@ -184,7 +200,8 @@
     "price": 1629.0,
     "notional": 162900.0,
     "realized_pnl": -11800.0,
-    "source_order": 16
+    "source_order": 16,
+    "strategy": "PEAD"
   },
   {
     "date": "2026-04-23",
@@ -195,7 +212,8 @@
     "price": 1791.5,
     "notional": 179150.0,
     "realized_pnl": -13450.0,
-    "source_order": 17
+    "source_order": 17,
+    "strategy": "COMBO"
   },
   {
     "date": "2026-04-23",
@@ -206,7 +224,8 @@
     "price": 2930.0,
     "notional": 293000.0,
     "realized_pnl": null,
-    "source_order": 18
+    "source_order": 18,
+    "strategy": "PEAD"
   },
   {
     "date": "2026-04-23",
@@ -217,7 +236,8 @@
     "price": 2122.0,
     "notional": 212200.0,
     "realized_pnl": 9000.0,
-    "source_order": 19
+    "source_order": 19,
+    "strategy": "PEAD"
   },
   {
     "date": "2026-04-21",
@@ -228,7 +248,8 @@
     "price": 1747.0,
     "notional": 174700.0,
     "realized_pnl": null,
-    "source_order": 20
+    "source_order": 20,
+    "strategy": "PEAD"
   },
   {
     "date": "2026-04-20",
@@ -239,7 +260,8 @@
     "price": 740.1,
     "notional": 74010.0,
     "realized_pnl": 110.0,
-    "source_order": 21
+    "source_order": 21,
+    "strategy": "COMBO"
   },
   {
     "date": "2026-04-20",
@@ -250,7 +272,8 @@
     "price": 738.7,
     "notional": 73870.0,
     "realized_pnl": null,
-    "source_order": 22
+    "source_order": 22,
+    "strategy": "COMBO"
   },
   {
     "date": "2026-04-17",
@@ -261,7 +284,8 @@
     "price": 206.0,
     "notional": 20600.0,
     "realized_pnl": -400.0,
-    "source_order": 23
+    "source_order": 23,
+    "strategy": "PEAD"
   },
   {
     "date": "2026-04-16",
@@ -272,7 +296,8 @@
     "price": 1462.5,
     "notional": 145980.0,
     "realized_pnl": -1320.0,
-    "source_order": 24
+    "source_order": 24,
+    "strategy": "COMBO"
   },
   {
     "date": "2026-04-16",
@@ -283,7 +308,8 @@
     "price": 1470.0,
     "notional": 147272.0,
     "realized_pnl": null,
-    "source_order": 25
+    "source_order": 25,
+    "strategy": "COMBO"
   },
   {
     "date": "2026-04-16",
@@ -294,7 +320,8 @@
     "price": 1492.0,
     "notional": 149476.0,
     "realized_pnl": null,
-    "source_order": 26
+    "source_order": 26,
+    "strategy": "COMBO"
   },
   {
     "date": "2026-04-16",
@@ -305,7 +332,8 @@
     "price": 1922.0,
     "notional": 192559.0,
     "realized_pnl": null,
-    "source_order": 27
+    "source_order": 27,
+    "strategy": "COMBO"
   },
   {
     "date": "2026-04-16",
@@ -316,7 +344,8 @@
     "price": 3396.0,
     "notional": 338970.0,
     "realized_pnl": -2730.0,
-    "source_order": 28
+    "source_order": 28,
+    "strategy": "COMBO"
   },
   {
     "date": "2026-04-16",
@@ -327,7 +356,8 @@
     "price": 2105.6,
     "notional": 210170.0,
     "realized_pnl": -2630.0,
-    "source_order": 29
+    "source_order": 29,
+    "strategy": "COMBO"
   },
   {
     "date": "2026-04-15",
@@ -338,7 +368,8 @@
     "price": 2032.0,
     "notional": 203200.0,
     "realized_pnl": null,
-    "source_order": 30
+    "source_order": 30,
+    "strategy": "PEAD"
   },
   {
     "date": "2026-04-15",
@@ -349,7 +380,8 @@
     "price": 1582.3,
     "notional": 158230.0,
     "realized_pnl": 2130.0,
-    "source_order": 31
+    "source_order": 31,
+    "strategy": "PEAD"
   },
   {
     "date": "2026-04-15",
@@ -360,6 +392,7 @@
     "price": 2003.3,
     "notional": 200330.0,
     "realized_pnl": -1370.0,
-    "source_order": 32
+    "source_order": 32,
+    "strategy": "PEAD"
   }
 ]

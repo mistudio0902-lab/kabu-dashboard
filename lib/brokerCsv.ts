@@ -49,6 +49,7 @@ type BrokerTradeOverride = {
   notional: number;
   realized_pnl: number | null;
   source_order: number;
+  strategy: "PEAD" | "COMBO";
 };
 
 const BROKER_TRADE_OVERRIDES = brokerTradeOverrides as BrokerTradeOverride[];
@@ -162,8 +163,8 @@ export function enrichBrokerTradeMetadata<T extends Trade>(trades: T[], rows = l
       company_name: override?.company_name ?? trade.company_name ?? null,
       realized_pnl: override?.realized_pnl ?? trade.realized_pnl ?? null,
       broker_source_order: override?.source_order ?? trade.broker_source_order ?? null,
-      strategy: trade.strategy === "broker_csv" ? null : trade.strategy,
-      strategy_name: trade.strategy === "broker_csv" ? "実取引" : trade.strategy_name,
+      strategy: override?.strategy ?? (trade.strategy === "Turnover" ? "COMBO" : trade.strategy),
+      strategy_name: null,
     };
   });
 }
